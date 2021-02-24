@@ -7,7 +7,7 @@ import (
 
 func main() {
 
-	newWord := w.CreateWord("sto", "cazzo")
+	newWord := w.CreateWord("label", "meaning")
 
 	fmt.Println("This is the new word %v% wich means %v%", newWord.Label, newWord.Meaning)
 }
