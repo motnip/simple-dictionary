@@ -1,13 +1,15 @@
 package word
 
 type Word struct {
-	Label   string
-	Meaning string
+	Label    string
+	Meaning  string
+	Sentence string
 }
 
-func CreateWord(label string, meaning string) *Word {
+func CreateWord(label string, meaning string, sentence string) *Word {
 	return &Word{
-		Label:   label,
-		Meaning: meaning,
+		Label:    label,
+		Meaning:  meaning,
+		Sentence: sentence,
 	}
 }
