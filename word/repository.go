@@ -1,22 +1,21 @@
 package word
 
 type repository struct {
-    language string
-    words []*Word
+	language string
+	words    []*Word
 }
 
 func NewRepository() *repository {
-    return &repository{
-        language: "EN",
-    }
+	return &repository{
+		language: "EN",
+	}
 }
 
 func (r *repository) AddWord(word *Word) *repository {
-    r.words = append(r.words, word)
-    return r
+	r.words = append(r.words, word)
+	return r
 }
 
 func (r *repository) ListWords() []*Word {
-
-    return r.words
+	return r.words
 }
