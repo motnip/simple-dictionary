@@ -15,3 +15,8 @@ func (r *repository) AddWord(word *Word) *repository {
     r.words = append(r.words, word)
     return r
 }
+
+func (r *repository) ListWords() []*Word {
+
+    return r.words
+}

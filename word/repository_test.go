@@ -18,3 +18,25 @@ func TestAddWord(t *testing.T) {
     }
 }
 
+func TestListWord(t *testing.T) {
+
+    repo := NewRepository()
+
+    newWord := Word{
+        Label:   "hello",
+        Meaning: "ciao",
+    }
+
+    _ = repo.AddWord(&newWord)
+
+    result := repo.ListWords()
+
+    if len(result) < 1 {
+        t.Error("no list of words have been returned", result)
+    }
+
+    if result[0].Label != newWord.Label {
+        t.Errorf("expected %s, got %s ", newWord.Label, result[0].Label)
+    }
+}
+
