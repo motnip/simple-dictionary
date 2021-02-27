@@ -12,5 +12,5 @@ func NewGoodbye() *route {
 }
 
 func (r *route) Goodbye(httpResponse http.ResponseWriter, httpRequest *http.Request) {
-	fmt.Fprintf(httpResponse, "Goodbye!")
+	fmt.Fprintf(httpResponse, "Good Bye!")
 }

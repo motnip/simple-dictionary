@@ -11,7 +11,7 @@ func NewGreetings() *route {
 	}
 }
 
-func (r *route) Listen(httpResponse http.ResponseWriter, httpRequest *http.Request) {
+func (r *route) Greetings(httpResponse http.ResponseWriter, httpRequest *http.Request) {
 	fmt.Fprintf(httpResponse, "Welcome home!")
 }
 

@@ -5,7 +5,8 @@ import (
 )
 
 type Controller interface {
-	Listen(httpResponse http.ResponseWriter, httpRequest *http.Request)
+	Greetings(httpResponse http.ResponseWriter, httpRequest *http.Request)
+	Goodbye(httpResponse http.ResponseWriter, httpRequest *http.Request)
 	Path() string
 }
 

@@ -1,20 +1,19 @@
 package web
 
 import (
-	"fmt"
 	"github.com/gorilla/mux"
+	"log"
 	"net/http"
-	"sermo/controller"
 )
 
 type Router struct {
 	router *mux.Router
-	paths  []*route
+	paths  []*Route
 }
 
-type route struct {
-	path           string
-	controllerFunc func(http.ResponseWriter, *http.Request)
+type Route struct {
+	Path           string
+	ControllerFunc func(http.ResponseWriter, *http.Request)
 }
 
 func NewRouter() *Router {
@@ -24,18 +23,11 @@ func NewRouter() *Router {
 }
 
 func (r *Router) RouterStart() {
-	if len(r.paths) == 0 {
-		//TODO raise a panic!!!
-		//return errors.New("no path available")
-		fmt.Println("Welcome home!")
-	}
-	//  r.router.HandleFunc(r.paths[0].path, r.paths[0].controllerFunc).GetMethods()
-	//   log.Fatal(http.ListenAndServe(":8080", r.router))
+	r.router.HandleFunc(r.paths[0].Path, r.paths[0].ControllerFunc).GetMethods()
+	r.router.HandleFunc(r.paths[1].Path, r.paths[1].ControllerFunc).GetMethods()
+	log.Fatal(http.ListenAndServe(":8080", r.router))
 }
 
-func (r *Router) AddPath(c controller.Controller) {
-	r.paths = append(r.paths, &route{
-		path:           c.Path(),
-		controllerFunc: c.Listen,
-	})
+func (r *Router) AddPath(newRoute *Route) {
+	r.paths = append(r.paths, newRoute)
 }
