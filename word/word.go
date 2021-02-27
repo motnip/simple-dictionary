@@ -5,3 +5,8 @@ type Word struct {
 	Meaning  string
 	Sentence string
 }
+
+type Dictionary struct {
+	Language string
+	Words    []*Word
+}
