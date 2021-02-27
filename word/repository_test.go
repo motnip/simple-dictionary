@@ -1,6 +1,24 @@
 package word
 
-import "testing"
+import (
+	"reflect"
+	"testing"
+)
+
+func TestCreateDictionary(t *testing.T) {
+
+	repo := NewRepository()
+
+	dictionary := &Dictionary{
+		Language: "en",
+	}
+
+	result := repo.CreateDictionary("en")
+
+	if !reflect.DeepEqual(result, dictionary) {
+		t.Errorf("expected %v got %v", dictionary, result)
+	}
+}
 
 func TestAddWord(t *testing.T) {
 
