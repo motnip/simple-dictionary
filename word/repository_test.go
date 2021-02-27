@@ -13,8 +13,12 @@ func TestAddWord(t *testing.T) {
 
 	result := repo.AddWord(&newWord)
 
-	if len(result.words) < 1 {
+	if len(result.Dictionary.Words) < 1 {
 		t.Error("word has not been persisted", result)
+	}
+
+	if result.Dictionary.Words[0].Label != newWord.Label {
+		t.Errorf("expected %v got %v", newWord.Label, result.Dictionary.Words[0].Label)
 	}
 }
 
