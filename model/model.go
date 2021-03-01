@@ -1,4 +1,4 @@
-package word
+package model
 
 type Word struct {
 	Label    string

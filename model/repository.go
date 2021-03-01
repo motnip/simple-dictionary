@@ -1,4 +1,4 @@
-package word
+package model
 
 import "errors"
 
@@ -8,7 +8,6 @@ type repository struct {
 
 func NewRepository() *repository {
 	return &repository{
-		//Dictionary: &Dictionary{},
 	}
 }
 
