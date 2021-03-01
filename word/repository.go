@@ -1,24 +1,31 @@
 package word
 
+import "errors"
+
 type repository struct {
 	Dictionary *Dictionary
 }
 
 func NewRepository() *repository {
 	return &repository{
-		Dictionary: &Dictionary{},
+		//Dictionary: &Dictionary{},
 	}
 }
 
 func (r *repository) CreateDictionary(language string) *Dictionary {
-	return &Dictionary{
+	r.Dictionary = &Dictionary{
 		Language: language,
 	}
+	return r.Dictionary
 }
 
-func (r *repository) AddWord(word *Word) *repository {
+func (r *repository) AddWord(word *Word) error {
+	if r.Dictionary == nil {
+		return errors.New("no dictionary available")
+	}
+
 	r.Dictionary.Words = append(r.Dictionary.Words, word)
-	return r
+	return nil
 }
 
 func (r *repository) ListWords() []*Word {
