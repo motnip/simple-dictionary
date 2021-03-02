@@ -2,6 +2,12 @@ package model
 
 import "errors"
 
+type Repository interface {
+	CreateDictionary(language string) *Dictionary
+	AddWord(word *Word) error
+	ListWords() []*Word
+}
+
 type repository struct {
 	Dictionary *Dictionary
 }
