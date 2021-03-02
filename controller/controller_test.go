@@ -22,8 +22,6 @@ func TestCreateDictionary(t *testing.T) {
         t.Errorf("handler returned wrong status code: got %v want %v",status, http.StatusOK)
     }
 
-    // Check the response body is what we expect.
-
     responseBody := recorder.Body.String()
     if responseBody != dictionaryLanguage {
         t.Errorf("handler returned unexpected body: got %v want %v",responseBody, dictionaryLanguage)
