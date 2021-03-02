@@ -9,6 +9,8 @@ import (
 
 type Controllers interface {
     CreateDictionary(httpResponse http.ResponseWriter, httpRequest *http.Request)
+    Goodbye(httpResponse http.ResponseWriter, httpRequest *http.Request)
+    Path() string
 }
 
 
