@@ -51,6 +51,7 @@ func TestAddWord_noDictionaryExists_Failed(t *testing.T) {
 func TestListWord(t *testing.T) {
 
     repo := NewRepository()
+    repo.CreateDictionary("en")
 
     sentence := "Hello world!"
     newWord := Word{
@@ -59,7 +60,10 @@ func TestListWord(t *testing.T) {
         Sentence: sentence,
     }
 
-    _ = repo.AddWord(&newWord)
+    err := repo.AddWord(&newWord)
+   if err != nil {
+       t.Errorf("Error not expected %v", err)
+   }
 
     result := repo.ListWords()
 
