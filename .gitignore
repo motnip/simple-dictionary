@@ -16,3 +16,6 @@
 
 #intellij idea
 .idea/
+
+# build file
+sermo
