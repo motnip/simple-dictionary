@@ -17,7 +17,7 @@ func TestCreateDictionary(t *testing.T) {
 	sut := NewController(repositoryMock)
 
 	dictionaryLanguage := "language"
-	request, err := http.NewRequest("GET", "/dictionary", bytes.NewBuffer([]byte(dictionaryLanguage)))
+	request, err := http.NewRequest("POST", "/dictionary", bytes.NewBuffer([]byte(dictionaryLanguage)))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -25,7 +25,7 @@ func TestCreateDictionary(t *testing.T) {
 	recorder := httptest.NewRecorder()
 
 	//when
-	repositoryMock.EXPECT().CreateDictionary(gomock.Any()).Times(1)
+	repositoryMock.EXPECT().CreateDictionary(gomock.Eq(dictionaryLanguage)).Times(1)
 
 	http.HandlerFunc(sut.CreateDictionary).ServeHTTP(recorder, request)
 
@@ -49,7 +49,7 @@ func TestCreateDictionary_noLanguage_returnBadRequest(t *testing.T) {
 	sut := NewController(repositoryMock)
 
 	dictionaryLanguage := ""
-	request, err := http.NewRequest("GET", "/dictionary", bytes.NewBuffer([]byte(dictionaryLanguage)))
+	request, err := http.NewRequest("POST", "/dictionary", bytes.NewBuffer([]byte(dictionaryLanguage)))
 	if err != nil {
 		t.Fatal(err)
 	}
