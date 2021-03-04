@@ -13,8 +13,7 @@ type repository struct {
 }
 
 func NewRepository() *repository {
-	return &repository{
-	}
+	return &repository{}
 }
 
 func (r *repository) CreateDictionary(language string) *Dictionary {
@@ -35,4 +34,9 @@ func (r *repository) AddWord(word *Word) error {
 
 func (r *repository) ListWords() []*Word {
 	return r.Dictionary.Words
+}
+
+func (r *repository) ListDictionary() []*Dictionary {
+	dictionaryList := make([]*Dictionary, 0)
+	return append(dictionaryList, r.Dictionary)
 }
