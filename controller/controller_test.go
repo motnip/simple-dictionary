@@ -72,3 +72,71 @@ func TestCreateDictionary_noLanguage_returnBadRequest(t *testing.T) {
 	}
 
 }
+
+func TestAddWord(t *testing.T) {
+	//given
+
+	newWord := "{\"Label\":\"hello\",\"Meaning\":\"ciao\",\"Sentence\":\"\"}"
+	expected := "{\"Label\":\"hello\",\"Meaning\":\"ciao\",\"Sentence\":\"\"}\n"
+
+	controller := gomock.NewController(t)
+	repositoryMock := mock_model.NewMockRepository(controller)
+	sut := NewController(repositoryMock)
+
+	request, err := http.NewRequest("POST", "/word", bytes.NewBuffer([]byte(newWord)))
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	recorder := httptest.NewRecorder()
+
+	//when
+	repositoryMock.EXPECT().AddWord(gomock.Any()).Times(1)
+	http.HandlerFunc(sut.AddWord).ServeHTTP(recorder, request)
+
+	//then
+	if status := recorder.Code; status != http.StatusCreated {
+		t.Errorf("handler returned wrong status code: got %v want %v", status, http.StatusBadRequest)
+	}
+
+	responseBody := recorder.Body.String()
+	if responseBody != expected {
+		t.Errorf("handler returned unexpected body: got %v want %v", responseBody, newWord)
+	}
+
+}
+
+func TestAddWord_jsonMalformed_Failed(t *testing.T) {
+	//given
+
+	newWord := "{\"Label\":hello,\"Meaning\":\"ciao\",\"Sentence\":\"\"}"
+	expected := "body request malformed"
+
+	controller := gomock.NewController(t)
+	repositoryMock := mock_model.NewMockRepository(controller)
+	sut := NewController(repositoryMock)
+
+	request, err := http.NewRequest("POST", "/word", bytes.NewBuffer([]byte(newWord)))
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	recorder := httptest.NewRecorder()
+
+	//when
+	repositoryMock.EXPECT().AddWord(gomock.Any()).Times(0)
+	http.HandlerFunc(sut.AddWord).ServeHTTP(recorder, request)
+
+	//then
+	if status := recorder.Code; status != http.StatusBadRequest {
+		t.Errorf("handler returned wrong status code: got %v want %v", status, http.StatusBadRequest)
+	}
+
+	responseBody := recorder.Body.String()
+	if responseBody != expected {
+		t.Errorf("handler returned unexpected body: got %v want %v", responseBody, expected)
+	}
+
+}
