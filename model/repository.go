@@ -18,7 +18,7 @@ func NewRepository() *repository {
 
 func (r *repository) CreateDictionary(language string) (*Dictionary, error) {
 
-	if r.Dictionary != nil && r.Dictionary.Language == language {
+	if r.existsDictionary(language) {
 		return nil, errors.New("dictionary already exists")
 	}
 
@@ -26,9 +26,14 @@ func (r *repository) CreateDictionary(language string) (*Dictionary, error) {
 		Language: language,
 	}
 
-
 	return r.Dictionary, nil
 }
+
+func (r *repository) existsDictionary(language string) bool{
+
+	return r.Dictionary != nil && r.Dictionary.Language == language
+}
+
 
 func (r *repository) AddWord(word *Word) error {
 	if r.Dictionary == nil {
