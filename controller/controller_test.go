@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"sermo/mocks/repository"
+	"strings"
 	"testing"
 )
 
@@ -67,8 +68,9 @@ func TestCreateDictionary_noLanguage_returnBadRequest(t *testing.T) {
 	}
 
 	responseBody := recorder.Body.String()
-	if responseBody != "" {
-		t.Errorf("handler returned unexpected body: got %v want %v", responseBody, dictionaryLanguage)
+	expectedErrorMsg := "not valid language\n"
+	if responseBody != expectedErrorMsg {
+		t.Errorf("handler returned unexpected body: got %v want %v", responseBody, expectedErrorMsg)
 	}
 
 }
@@ -135,7 +137,7 @@ func TestAddWord_jsonMalformed_Failed(t *testing.T) {
 	}
 
 	responseBody := recorder.Body.String()
-	if responseBody != expected {
+	if !strings.Contains(responseBody,expected){
 		t.Errorf("handler returned unexpected body: got %v want %v", responseBody, expected)
 	}
 

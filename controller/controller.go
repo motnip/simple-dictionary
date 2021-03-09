@@ -27,12 +27,11 @@ func (c *controller) CreateDictionary(httpResponse http.ResponseWriter, httpRequ
 	var input string
 	reqBody, err := ioutil.ReadAll(httpRequest.Body)
 	if err != nil {
-		fmt.Fprintf(httpResponse, "Kindly enter data with the event title and description only in order to update")
+		http.Error(httpResponse, err.Error(), http.StatusBadRequest)
 	}
 
 	if input = string(reqBody[:]); input == "" {
-		httpResponse.WriteHeader(http.StatusBadRequest)
-		fmt.Fprintf(httpResponse, input)
+		http.Error(httpResponse, "not valid language", http.StatusBadRequest)
 		return
 	}
 
@@ -45,14 +44,13 @@ func (c *controller) AddWord(httpResponse http.ResponseWriter, httpRequest *http
 	var newWordDto model.Word
 	reqBody, err := ioutil.ReadAll(httpRequest.Body)
 	if err != nil {
-		fmt.Fprintf(httpResponse, "Kindly enter data with the event title and description only in order to update")
+		http.Error(httpResponse, err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	err = json.Unmarshal(reqBody, &newWordDto)
 	if err != nil {
-		httpResponse.WriteHeader(http.StatusBadRequest)
-		fmt.Fprintf(httpResponse, "body request malformed")
+		http.Error(httpResponse, "body request malformed: "+err.Error(), http.StatusBadRequest)
 		return
 	}
 
