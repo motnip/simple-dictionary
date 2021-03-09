@@ -35,8 +35,14 @@ func (c *controller) CreateDictionary(httpResponse http.ResponseWriter, httpRequ
 		return
 	}
 
+	_, err = c.repository.CreateDictionary(input)
+
+	if err!= nil {
+		http.Error(httpResponse, err.Error(), http.StatusBadRequest)
+		return
+	}
+
 	httpResponse.WriteHeader(http.StatusCreated)
-	c.repository.CreateDictionary(input)
 	fmt.Fprintf(httpResponse, input)
 }
 

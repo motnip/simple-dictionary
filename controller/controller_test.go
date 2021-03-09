@@ -2,6 +2,7 @@ package controller
 
 import (
 	"bytes"
+	"errors"
 	"github.com/golang/mock/gomock"
 	"net/http"
 	"net/http/httptest"
@@ -72,8 +73,44 @@ func TestCreateDictionary_noLanguage_returnBadRequest(t *testing.T) {
 	if responseBody != expectedErrorMsg {
 		t.Errorf("handler returned unexpected body: got %v want %v", responseBody, expectedErrorMsg)
 	}
-
 }
+
+func TestCreateDictionary_existDictionaryForALanguage_returnBadRequest(t *testing.T) {
+	//given
+	controller := gomock.NewController(t)
+	repositoryMock := mock_model.NewMockRepository(controller)
+
+	sut := NewController(repositoryMock)
+
+	dictionaryLanguage := "en"
+	firstRequest, err := http.NewRequest("POST", "/dictionary", bytes.NewBuffer([]byte(dictionaryLanguage)))
+	if err != nil {
+		t.Fatal(err)
+	}
+	secondRequest, err := http.NewRequest("POST", "/dictionary", bytes.NewBuffer([]byte(dictionaryLanguage)))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	recorderFirstRequest := httptest.NewRecorder()
+	recorderSecondRequest := httptest.NewRecorder()
+
+	//when
+	repositoryMock.EXPECT().CreateDictionary(gomock.Any()).Return(nil, nil)
+	repositoryMock.EXPECT().CreateDictionary(gomock.Any()).Return(nil, errors.New("forced error"))
+	http.HandlerFunc(sut.CreateDictionary).ServeHTTP(recorderFirstRequest, firstRequest)
+	http.HandlerFunc(sut.CreateDictionary).ServeHTTP(recorderSecondRequest, secondRequest)
+
+	//then
+	if status := recorderFirstRequest.Code; status != http.StatusCreated {
+		t.Errorf("handler returned wrong status code: got %v want %v", status, http.StatusCreated)
+	}
+
+	if status := recorderSecondRequest.Code; status != http.StatusBadRequest {
+		t.Errorf("handler returned wrong status code: got %v want %v", status, http.StatusBadRequest)
+	}
+}
+
 
 func TestAddWord(t *testing.T) {
 	//given
