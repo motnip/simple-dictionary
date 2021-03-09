@@ -3,7 +3,7 @@ package model
 import "errors"
 
 type Repository interface {
-	CreateDictionary(language string) *Dictionary
+	CreateDictionary(language string) (*Dictionary, error)
 	AddWord(word *Word) error
 	ListWords() []*Word
 }
@@ -16,11 +16,18 @@ func NewRepository() *repository {
 	return &repository{}
 }
 
-func (r *repository) CreateDictionary(language string) *Dictionary {
+func (r *repository) CreateDictionary(language string) (*Dictionary, error) {
+
+	if r.Dictionary != nil && r.Dictionary.Language == language {
+		return nil, errors.New("dictionary already exists")
+	}
+
 	r.Dictionary = &Dictionary{
 		Language: language,
 	}
-	return r.Dictionary
+
+
+	return r.Dictionary, nil
 }
 
 func (r *repository) AddWord(word *Word) error {

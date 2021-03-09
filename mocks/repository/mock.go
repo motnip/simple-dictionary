@@ -49,11 +49,12 @@ func (mr *MockRepositoryMockRecorder) AddWord(word interface{}) *gomock.Call {
 }
 
 // CreateDictionary mocks base method.
-func (m *MockRepository) CreateDictionary(language string) *model.Dictionary {
+func (m *MockRepository) CreateDictionary(language string) (*model.Dictionary, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateDictionary", language)
 	ret0, _ := ret[0].(*model.Dictionary)
-	return ret0
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // CreateDictionary indicates an expected call of CreateDictionary.
