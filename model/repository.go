@@ -29,11 +29,10 @@ func (r *repository) CreateDictionary(language string) (*Dictionary, error) {
 	return r.Dictionary, nil
 }
 
-func (r *repository) existsDictionary(language string) bool{
+func (r *repository) existsDictionary(language string) bool {
 
 	return r.Dictionary != nil && r.Dictionary.Language == language
 }
-
 
 func (r *repository) AddWord(word *Word) error {
 	if r.Dictionary == nil {

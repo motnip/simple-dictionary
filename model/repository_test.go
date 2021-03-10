@@ -18,7 +18,7 @@ func TestCreateDictionary(t *testing.T) {
 		Language: "en",
 	}
 
-	result,_ := repo.CreateDictionary("en")
+	result, _ := repo.CreateDictionary("en")
 
 	if !reflect.DeepEqual(result, dictionary) {
 		t.Errorf("expected %v got %v", dictionary, result)
@@ -56,17 +56,16 @@ func TestExistsDictionary_dictionaryAlreadyExists_Fail(t *testing.T) {
 
 	existsDictionary := repo.existsDictionary("en")
 
-	if !existsDictionary  {
+	if !existsDictionary {
 		t.Errorf("expected %v got %v", true, false)
 	}
 }
-
 
 func TestListDictionary(t *testing.T) {
 
 	repo := NewRepository()
 
-	_,_ = repo.CreateDictionary("en")
+	_, _ = repo.CreateDictionary("en")
 
 	result := repo.ListDictionary()
 

@@ -111,7 +111,6 @@ func TestCreateDictionary_existDictionaryForALanguage_returnBadRequest(t *testin
 	}
 }
 
-
 func TestAddWord(t *testing.T) {
 	//given
 
@@ -174,7 +173,7 @@ func TestAddWord_jsonMalformed_Failed(t *testing.T) {
 	}
 
 	responseBody := recorder.Body.String()
-	if !strings.Contains(responseBody,expected){
+	if !strings.Contains(responseBody, expected) {
 		t.Errorf("handler returned unexpected body: got %v want %v", responseBody, expected)
 	}
 

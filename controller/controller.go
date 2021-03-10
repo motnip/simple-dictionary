@@ -37,7 +37,7 @@ func (c *controller) CreateDictionary(httpResponse http.ResponseWriter, httpRequ
 
 	_, err = c.repository.CreateDictionary(input)
 
-	if err!= nil {
+	if err != nil {
 		http.Error(httpResponse, err.Error(), http.StatusBadRequest)
 		return
 	}
