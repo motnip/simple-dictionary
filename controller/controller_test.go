@@ -207,7 +207,7 @@ func TestListWords(t *testing.T) {
 	recorder := httptest.NewRecorder()
 
 	//when
-	repositoryMock.EXPECT().ListWords().Return(words,nil)
+	repositoryMock.EXPECT().ListWords().Return(words, nil)
 	http.HandlerFunc(sut.ListWords).ServeHTTP(recorder, request)
 
 	//then
@@ -220,4 +220,36 @@ func TestListWords(t *testing.T) {
 		t.Errorf("handler returned unexpected body: got %v want %v", responseBody, expected)
 	}
 
+}
+
+func TestListWords_noDictionaryForALanguage_returnBadRequest(t *testing.T) {
+	//given
+	controller := gomock.NewController(t)
+
+	expected := "no dictionary available"
+	expectedError := errors.New(expected)
+
+	repositoryMock := mock_model.NewMockRepository(controller)
+	sut := NewController(repositoryMock)
+
+	request, err := http.NewRequest("get", "/word", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	recorder := httptest.NewRecorder()
+
+	//when
+	repositoryMock.EXPECT().ListWords().Return(nil, expectedError)
+	http.HandlerFunc(sut.ListWords).ServeHTTP(recorder, request)
+
+	//then
+	if status := recorder.Code; status != http.StatusBadRequest {
+		t.Errorf("handler returned wrong status code: got %v want %v", status, http.StatusBadRequest)
+	}
+
+	responseBody := recorder.Body.String()
+	if !strings.Contains(responseBody, expected) {
+		t.Errorf("handler returned unexpected body: got %v want %v", responseBody, expected)
+	}
 }

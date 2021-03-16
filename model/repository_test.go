@@ -114,7 +114,7 @@ func TestListWord(t *testing.T) {
 		t.Errorf("Error not expected %v", err)
 	}
 
-	result,_ := repo.ListWords()
+	result, _ := repo.ListWords()
 
 	if len(result) < 1 {
 		t.Error("no list of words have been returned", result)
@@ -135,8 +135,7 @@ func TestListWord_noDictionaryExists_Failed(t *testing.T) {
 
 	repo := NewRepository()
 
-
-	result,err := repo.ListWords()
+	result, err := repo.ListWords()
 
 	if err == nil {
 		t.Errorf("expected %v got %v", "no dictionary available", err)

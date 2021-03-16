@@ -71,7 +71,11 @@ func (c *controller) AddWord(httpResponse http.ResponseWriter, httpRequest *http
 
 func (c *controller) ListWords(httpResponse http.ResponseWriter, httpRequest *http.Request) {
 
-	words,_ := c.repository.ListWords()
+	words, err := c.repository.ListWords()
+	if err != nil {
+		http.Error(httpResponse, "body request malformed: "+err.Error(), http.StatusBadRequest)
+		return
+	}
 
 	json.NewEncoder(httpResponse).Encode(words)
 }
