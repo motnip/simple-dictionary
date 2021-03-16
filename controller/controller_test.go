@@ -146,6 +146,40 @@ func TestAddWord(t *testing.T) {
 
 }
 
+func TestAddWord_noDictionary_Failed(t *testing.T) {
+	//given
+
+	newWord := "{\"Label\":\"hello\",\"Meaning\":\"ciao\",\"Sentence\":\"\"}"
+	expectedError := errors.New("no dictionary available")
+
+	controller := gomock.NewController(t)
+	repositoryMock := mock_model.NewMockRepository(controller)
+	sut := NewController(repositoryMock)
+
+	request, err := http.NewRequest("POST", "/word", bytes.NewBuffer([]byte(newWord)))
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	recorder := httptest.NewRecorder()
+
+	//when
+	repositoryMock.EXPECT().AddWord(gomock.Any()).Return(expectedError)
+	http.HandlerFunc(sut.AddWord).ServeHTTP(recorder, request)
+
+	//then
+	if status := recorder.Code; status != http.StatusBadRequest {
+		t.Errorf("handler returned wrong status code: got %v want %v", status, http.StatusBadRequest)
+	}
+
+	responseBody := recorder.Body.String()
+	if !strings.Contains(responseBody, expectedError.Error()) {
+		t.Errorf("handler returned unexpected body: got %v want %v", responseBody, expectedError)
+	}
+
+}
+
 func TestAddWord_jsonMalformed_Failed(t *testing.T) {
 	//given
 

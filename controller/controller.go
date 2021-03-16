@@ -61,7 +61,11 @@ func (c *controller) AddWord(httpResponse http.ResponseWriter, httpRequest *http
 		return
 	}
 
-	c.repository.AddWord(&newWordDto)
+	err = c.repository.AddWord(&newWordDto)
+	if err != nil {
+		http.Error(httpResponse, err.Error(), http.StatusBadRequest)
+		return
+	}
 
 	httpResponse.WriteHeader(http.StatusCreated)
 
