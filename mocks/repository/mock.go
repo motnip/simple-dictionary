@@ -64,11 +64,12 @@ func (mr *MockRepositoryMockRecorder) CreateDictionary(language interface{}) *go
 }
 
 // ListWords mocks base method.
-func (m *MockRepository) ListWords() []*model.Word {
+func (m *MockRepository) ListWords() ([]*model.Word, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListWords")
 	ret0, _ := ret[0].([]*model.Word)
-	return ret0
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // ListWords indicates an expected call of ListWords.

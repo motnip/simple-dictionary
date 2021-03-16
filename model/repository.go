@@ -5,7 +5,7 @@ import "errors"
 type Repository interface {
 	CreateDictionary(language string) (*Dictionary, error)
 	AddWord(word *Word) error
-	ListWords() []*Word
+	ListWords() ([]*Word,error)
 }
 
 type repository struct {
@@ -48,6 +48,9 @@ func (r *repository) AddWord(word *Word) error {
 	return nil
 }
 
-func (r *repository) ListWords() []*Word {
-	return r.Dictionary.Words
+func (r *repository) ListWords() ([]*Word,error) {
+	if r.Dictionary == nil {
+		return nil,errors.New("no dictionary available")
+	}
+	return r.Dictionary.Words, nil
 }

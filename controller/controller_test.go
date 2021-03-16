@@ -207,7 +207,7 @@ func TestListWords(t *testing.T) {
 	recorder := httptest.NewRecorder()
 
 	//when
-	repositoryMock.EXPECT().ListWords().Return(words)
+	repositoryMock.EXPECT().ListWords().Return(words,nil)
 	http.HandlerFunc(sut.ListWords).ServeHTTP(recorder, request)
 
 	//then

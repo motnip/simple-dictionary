@@ -71,7 +71,7 @@ func (c *controller) AddWord(httpResponse http.ResponseWriter, httpRequest *http
 
 func (c *controller) ListWords(httpResponse http.ResponseWriter, httpRequest *http.Request) {
 
-	words := c.repository.ListWords()
+	words,_ := c.repository.ListWords()
 
 	json.NewEncoder(httpResponse).Encode(words)
 }
