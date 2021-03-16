@@ -34,6 +34,11 @@ func (r *repository) existsDictionary(language string) bool {
 	return r.Dictionary != nil && r.Dictionary.Language == language
 }
 
+func (r *repository) ListDictionary() []*Dictionary {
+	dictionaryList := make([]*Dictionary, 0)
+	return append(dictionaryList, r.Dictionary)
+}
+
 func (r *repository) AddWord(word *Word) error {
 	if r.Dictionary == nil {
 		return errors.New("no dictionary available")
@@ -45,9 +50,4 @@ func (r *repository) AddWord(word *Word) error {
 
 func (r *repository) ListWords() []*Word {
 	return r.Dictionary.Words
-}
-
-func (r *repository) ListDictionary() []*Dictionary {
-	dictionaryList := make([]*Dictionary, 0)
-	return append(dictionaryList, r.Dictionary)
 }
