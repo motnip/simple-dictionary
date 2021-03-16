@@ -24,6 +24,7 @@ func NewController(repository model.Repository) Controllers {
 		repository: repository,
 	}
 }
+
 func (c *controller) CreateDictionary(httpResponse http.ResponseWriter, httpRequest *http.Request) {
 	var input string
 	reqBody, err := ioutil.ReadAll(httpRequest.Body)
@@ -77,7 +78,7 @@ func (c *controller) ListWords(httpResponse http.ResponseWriter, httpRequest *ht
 
 	words, err := c.repository.ListWords()
 	if err != nil {
-		http.Error(httpResponse, "body request malformed: "+err.Error(), http.StatusBadRequest)
+		http.Error(httpResponse, err.Error(), http.StatusBadRequest)
 		return
 	}
 
