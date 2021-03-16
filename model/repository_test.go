@@ -54,7 +54,7 @@ func TestExistsDictionary_dictionaryAlreadyExists_Fail(t *testing.T) {
 		t.Errorf("Error while create first dictionary for test")
 	}
 
-	existsDictionary := repo.existsDictionary("en")
+	existsDictionary := repo.existsDictionaryOfLanguage("en")
 
 	if !existsDictionary {
 		t.Errorf("expected %v got %v", true, false)

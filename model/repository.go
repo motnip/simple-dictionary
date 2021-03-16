@@ -18,7 +18,7 @@ func NewRepository() *repository {
 
 func (r *repository) CreateDictionary(language string) (*Dictionary, error) {
 
-	if r.existsDictionary(language) {
+	if r.existsDictionaryOfLanguage(language) {
 		return nil, errors.New("dictionary already exists")
 	}
 
@@ -29,9 +29,13 @@ func (r *repository) CreateDictionary(language string) (*Dictionary, error) {
 	return r.Dictionary, nil
 }
 
-func (r *repository) existsDictionary(language string) bool {
+func (r *repository) existsDictionaryOfLanguage(language string) bool {
 
-	return r.Dictionary != nil && r.Dictionary.Language == language
+	return r.existsDictionary() && r.Dictionary.Language == language
+}
+
+func (r *repository) existsDictionary() bool {
+	return r.Dictionary != nil
 }
 
 func (r *repository) ListDictionary() []*Dictionary {
@@ -40,7 +44,7 @@ func (r *repository) ListDictionary() []*Dictionary {
 }
 
 func (r *repository) AddWord(word *Word) error {
-	if r.Dictionary == nil {
+	if !r.existsDictionary() {
 		return errors.New("no dictionary available")
 	}
 
@@ -49,7 +53,7 @@ func (r *repository) AddWord(word *Word) error {
 }
 
 func (r *repository) ListWords() ([]*Word,error) {
-	if r.Dictionary == nil {
+	if !r.existsDictionary() {
 		return nil,errors.New("no dictionary available")
 	}
 	return r.Dictionary.Words, nil
