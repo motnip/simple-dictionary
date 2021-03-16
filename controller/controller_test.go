@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"sermo/mocks/repository"
+	"sermo/model"
 	"strings"
 	"testing"
 )
@@ -174,6 +175,48 @@ func TestAddWord_jsonMalformed_Failed(t *testing.T) {
 
 	responseBody := recorder.Body.String()
 	if !strings.Contains(responseBody, expected) {
+		t.Errorf("handler returned unexpected body: got %v want %v", responseBody, expected)
+	}
+
+}
+
+func TestListWords(t *testing.T) {
+	//given
+	controller := gomock.NewController(t)
+
+	words := make([]*model.Word, 0)
+	words = append(words, &model.Word{
+		Label:   "foo",
+		Meaning: "foo",
+	})
+	words = append(words, &model.Word{
+		Label:   "bar",
+		Meaning: "bar",
+	})
+
+	expected := "[{\"Label\":\"foo\",\"Meaning\":\"foo\",\"Sentence\":\"\"},{\"Label\":\"bar\",\"Meaning\":\"bar\",\"Sentence\":\"\"}]\n"
+
+	repositoryMock := mock_model.NewMockRepository(controller)
+	sut := NewController(repositoryMock)
+
+	request, err := http.NewRequest("get", "/word", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	recorder := httptest.NewRecorder()
+
+	//when
+	repositoryMock.EXPECT().ListWords().Return(words)
+	http.HandlerFunc(sut.ListWords).ServeHTTP(recorder, request)
+
+	//then
+	if status := recorder.Code; status != http.StatusOK {
+		t.Errorf("handler returned wrong status code: got %v want %v", status, http.StatusBadRequest)
+	}
+
+	responseBody := recorder.Body.String()
+	if responseBody != expected {
 		t.Errorf("handler returned unexpected body: got %v want %v", responseBody, expected)
 	}
 

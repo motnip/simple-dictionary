@@ -12,6 +12,7 @@ import (
 type Controllers interface {
 	CreateDictionary(httpResponse http.ResponseWriter, httpRequest *http.Request)
 	AddWord(httpResponse http.ResponseWriter, httpRequest *http.Request)
+	ListWords(httpResponse http.ResponseWriter, httpRequest *http.Request)
 }
 
 type controller struct {
@@ -66,4 +67,11 @@ func (c *controller) AddWord(httpResponse http.ResponseWriter, httpRequest *http
 
 	//https://stackoverflow.com/questions/36319918/why-does-json-encoder-add-an-extra-line
 	json.NewEncoder(httpResponse).Encode(newWordDto)
+}
+
+func (c *controller) ListWords(httpResponse http.ResponseWriter, httpRequest *http.Request) {
+
+	words := c.repository.ListWords()
+
+	json.NewEncoder(httpResponse).Encode(words)
 }
