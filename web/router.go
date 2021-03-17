@@ -21,8 +21,8 @@ func NewRouter(controller c.Controllers) *Router {
 }
 
 func (r *Router) RouterStart() {
-	r.router.HandleFunc("/dictionary", r.controller.CreateDictionary)
-	r.router.HandleFunc("/word", r.controller.AddWord)
+	r.router.HandleFunc("/dictionary", r.controller.CreateDictionary).Methods(http.MethodPost)
+	r.router.HandleFunc("/word", r.controller.AddWord).Methods(http.MethodPost)
 	r.router.HandleFunc("/word", r.controller.ListWords).GetMethods()
 	fmt.Println("Server started... ")
 	log.Fatal(http.ListenAndServe(":8080", r.router))
