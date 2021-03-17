@@ -8,8 +8,7 @@ import (
 	"sermo/model"
 )
 
-//to rename Controller
-type Controllers interface {
+type Controller interface {
 	CreateDictionary(httpResponse http.ResponseWriter, httpRequest *http.Request)
 	AddWord(httpResponse http.ResponseWriter, httpRequest *http.Request)
 	ListWords(httpResponse http.ResponseWriter, httpRequest *http.Request)
@@ -19,7 +18,7 @@ type controller struct {
 	repository model.Repository
 }
 
-func NewController(repository model.Repository) Controllers {
+func NewController(repository model.Repository) Controller {
 	return &controller{
 		repository: repository,
 	}

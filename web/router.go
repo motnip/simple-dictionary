@@ -10,10 +10,10 @@ import (
 
 type Router struct {
 	router     *mux.Router
-	controller c.Controllers
+	controller c.Controller
 }
 
-func NewRouter(controller c.Controllers) *Router {
+func NewRouter(controller c.Controller) *Router {
 	return &Router{
 		router:     mux.NewRouter().StrictSlash(true),
 		controller: controller,
