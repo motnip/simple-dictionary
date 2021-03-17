@@ -18,7 +18,10 @@ func TestCreateDictionary(t *testing.T) {
 		Language: "en",
 	}
 
-	result, _ := repo.CreateDictionary("en")
+	result, err := repo.CreateDictionary("en")
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	if !reflect.DeepEqual(result, dictionary) {
 		t.Errorf("expected %v got %v", dictionary, result)
@@ -31,11 +34,10 @@ func TestCreateDictionary_dictionaryAlreadyExists_Fail(t *testing.T) {
 
 	_, err := repo.CreateDictionary("en")
 	if err != nil {
-		t.Errorf("Error while create first dictionary for test")
+		t.Fatal(err)
 	}
 
 	secondDictionaryResult, err := repo.CreateDictionary("en")
-
 	if err == nil {
 		t.Errorf("expected %v got %v", "dictionary already exists", secondDictionaryResult)
 	}
@@ -51,7 +53,7 @@ func TestExistsDictionary_dictionaryAlreadyExists_Fail(t *testing.T) {
 
 	_, err := repo.CreateDictionary("en")
 	if err != nil {
-		t.Errorf("Error while create first dictionary for test")
+		t.Fatal(err)
 	}
 
 	existsDictionary := repo.existsDictionaryOfLanguage("en")
