@@ -14,12 +14,12 @@ import (
 
 func TestCreateDictionary(t *testing.T) {
 	//given
+	dictionaryLanguage := "language"
+
 	controller := gomock.NewController(t)
 	repositoryMock := mock_model.NewMockRepository(controller)
-
 	sut := NewController(repositoryMock)
 
-	dictionaryLanguage := "language"
 	request, err := http.NewRequest("POST", "/dictionary", bytes.NewBuffer([]byte(dictionaryLanguage)))
 	if err != nil {
 		t.Fatal(err)
@@ -44,15 +44,16 @@ func TestCreateDictionary(t *testing.T) {
 
 }
 
-func TestCreateDictionary_noLanguage_returnBadRequest(t *testing.T) {
+func TestCreateDictionary_EmptyLanguage_returnBadRequest(t *testing.T) {
 	//given
+	emptyDictionaryLanguage := ""
+
 	controller := gomock.NewController(t)
 	repositoryMock := mock_model.NewMockRepository(controller)
 
 	sut := NewController(repositoryMock)
 
-	dictionaryLanguage := ""
-	request, err := http.NewRequest("POST", "/dictionary", bytes.NewBuffer([]byte(dictionaryLanguage)))
+	request, err := http.NewRequest("POST", "/dictionary", bytes.NewBuffer([]byte(emptyDictionaryLanguage)))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -78,12 +79,13 @@ func TestCreateDictionary_noLanguage_returnBadRequest(t *testing.T) {
 
 func TestCreateDictionary_existDictionaryForALanguage_returnBadRequest(t *testing.T) {
 	//given
+	dictionaryLanguage := "en"
+
 	controller := gomock.NewController(t)
 	repositoryMock := mock_model.NewMockRepository(controller)
 
 	sut := NewController(repositoryMock)
 
-	dictionaryLanguage := "en"
 	firstRequest, err := http.NewRequest("POST", "/dictionary", bytes.NewBuffer([]byte(dictionaryLanguage)))
 	if err != nil {
 		t.Fatal(err)
@@ -114,9 +116,8 @@ func TestCreateDictionary_existDictionaryForALanguage_returnBadRequest(t *testin
 
 func TestAddWord(t *testing.T) {
 	//given
-
 	newWord := "{\"Label\":\"hello\",\"Meaning\":\"ciao\",\"Sentence\":\"\"}"
-	expected := "{\"Label\":\"hello\",\"Meaning\":\"ciao\",\"Sentence\":\"\"}\n"
+	returnedWord := "{\"Label\":\"hello\",\"Meaning\":\"ciao\",\"Sentence\":\"\"}\n"
 
 	controller := gomock.NewController(t)
 	repositoryMock := mock_model.NewMockRepository(controller)
@@ -136,19 +137,18 @@ func TestAddWord(t *testing.T) {
 
 	//then
 	if status := recorder.Code; status != http.StatusCreated {
-		t.Errorf("handler returned wrong status code: got %v want %v", status, http.StatusBadRequest)
+		t.Errorf("handler returned wrong status code: got %v want %v", status, http.StatusCreated)
 	}
 
 	responseBody := recorder.Body.String()
-	if responseBody != expected {
-		t.Errorf("handler returned unexpected body: got %v want %v", responseBody, newWord)
+	if responseBody != returnedWord {
+		t.Errorf("handler returned unexpected body: got %v want %v", responseBody, returnedWord)
 	}
 
 }
 
 func TestAddWord_noDictionary_Failed(t *testing.T) {
 	//given
-
 	newWord := "{\"Label\":\"hello\",\"Meaning\":\"ciao\",\"Sentence\":\"\"}"
 	expectedError := errors.New("no dictionary available")
 
@@ -182,9 +182,8 @@ func TestAddWord_noDictionary_Failed(t *testing.T) {
 
 func TestAddWord_jsonMalformed_Failed(t *testing.T) {
 	//given
-
 	newWord := "{\"Label\":hello,\"Meaning\":\"ciao\",\"Sentence\":\"\"}"
-	expected := "body request malformed"
+	expectedErrorMessage := "body request malformed"
 
 	controller := gomock.NewController(t)
 	repositoryMock := mock_model.NewMockRepository(controller)
@@ -208,16 +207,14 @@ func TestAddWord_jsonMalformed_Failed(t *testing.T) {
 	}
 
 	responseBody := recorder.Body.String()
-	if !strings.Contains(responseBody, expected) {
-		t.Errorf("handler returned unexpected body: got %v want %v", responseBody, expected)
+	if !strings.Contains(responseBody, expectedErrorMessage) {
+		t.Errorf("handler returned unexpected body: got %v want %v", responseBody, expectedErrorMessage)
 	}
 
 }
 
 func TestListWords(t *testing.T) {
 	//given
-	controller := gomock.NewController(t)
-
 	words := make([]*model.Word, 0)
 	words = append(words, &model.Word{
 		Label:   "foo",
@@ -228,8 +225,9 @@ func TestListWords(t *testing.T) {
 		Meaning: "bar",
 	})
 
-	expected := "[{\"Label\":\"foo\",\"Meaning\":\"foo\",\"Sentence\":\"\"},{\"Label\":\"bar\",\"Meaning\":\"bar\",\"Sentence\":\"\"}]\n"
+	expectedWordsList := "[{\"Label\":\"foo\",\"Meaning\":\"foo\",\"Sentence\":\"\"},{\"Label\":\"bar\",\"Meaning\":\"bar\",\"Sentence\":\"\"}]\n"
 
+	controller := gomock.NewController(t)
 	repositoryMock := mock_model.NewMockRepository(controller)
 	sut := NewController(repositoryMock)
 
@@ -246,23 +244,21 @@ func TestListWords(t *testing.T) {
 
 	//then
 	if status := recorder.Code; status != http.StatusOK {
-		t.Errorf("handler returned wrong status code: got %v want %v", status, http.StatusBadRequest)
+		t.Errorf("handler returned wrong status code: got %v want %v", status, http.StatusOK)
 	}
 
 	responseBody := recorder.Body.String()
-	if responseBody != expected {
-		t.Errorf("handler returned unexpected body: got %v want %v", responseBody, expected)
+	if responseBody != expectedWordsList {
+		t.Errorf("handler returned unexpected body: got %v want %v", responseBody, expectedWordsList)
 	}
 
 }
 
-func TestListWords_noDictionaryForALanguage_returnBadRequest(t *testing.T) {
+func TestListWords_noAvailableDictionary_returnBadRequest(t *testing.T) {
 	//given
+	expectedError := errors.New("no dictionary available")
+
 	controller := gomock.NewController(t)
-
-	expected := "no dictionary available"
-	expectedError := errors.New(expected)
-
 	repositoryMock := mock_model.NewMockRepository(controller)
 	sut := NewController(repositoryMock)
 
@@ -283,7 +279,7 @@ func TestListWords_noDictionaryForALanguage_returnBadRequest(t *testing.T) {
 	}
 
 	responseBody := recorder.Body.String()
-	if !strings.Contains(responseBody, expected) {
-		t.Errorf("handler returned unexpected body: got %v want %v", responseBody, expected)
+	if !strings.Contains(responseBody, expectedError.Error()) {
+		t.Errorf("handler returned unexpected body: got %v want %v", responseBody, expectedError.Error())
 	}
 }
