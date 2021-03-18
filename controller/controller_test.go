@@ -34,12 +34,12 @@ func TestCreateDictionary(t *testing.T) {
 
 	//then
 	if status := recorder.Code; status != http.StatusCreated {
-		t.Errorf("handler returned wrong status code: got %v want %v", status, http.StatusCreated)
+		t.Errorf("Router returned wrong status code: got %v want %v", status, http.StatusCreated)
 	}
 
 	responseBody := recorder.Body.String()
 	if responseBody != dictionaryLanguage {
-		t.Errorf("handler returned unexpected body: got %v want %v", responseBody, dictionaryLanguage)
+		t.Errorf("Router returned unexpected body: got %v want %v", responseBody, dictionaryLanguage)
 	}
 
 }
@@ -67,13 +67,13 @@ func TestCreateDictionary_EmptyLanguage_returnBadRequest(t *testing.T) {
 
 	//then
 	if status := recorder.Code; status != http.StatusBadRequest {
-		t.Errorf("handler returned wrong status code: got %v want %v", status, http.StatusBadRequest)
+		t.Errorf("Router returned wrong status code: got %v want %v", status, http.StatusBadRequest)
 	}
 
 	responseBody := recorder.Body.String()
 	expectedErrorMsg := "not valid language\n"
 	if responseBody != expectedErrorMsg {
-		t.Errorf("handler returned unexpected body: got %v want %v", responseBody, expectedErrorMsg)
+		t.Errorf("Router returned unexpected body: got %v want %v", responseBody, expectedErrorMsg)
 	}
 }
 
@@ -106,11 +106,11 @@ func TestCreateDictionary_existDictionaryForALanguage_returnBadRequest(t *testin
 
 	//then
 	if status := recorderFirstRequest.Code; status != http.StatusCreated {
-		t.Errorf("handler returned wrong status code: got %v want %v", status, http.StatusCreated)
+		t.Errorf("Router returned wrong status code: got %v want %v", status, http.StatusCreated)
 	}
 
 	if status := recorderSecondRequest.Code; status != http.StatusBadRequest {
-		t.Errorf("handler returned wrong status code: got %v want %v", status, http.StatusBadRequest)
+		t.Errorf("Router returned wrong status code: got %v want %v", status, http.StatusBadRequest)
 	}
 }
 
@@ -137,12 +137,12 @@ func TestAddWord(t *testing.T) {
 
 	//then
 	if status := recorder.Code; status != http.StatusCreated {
-		t.Errorf("handler returned wrong status code: got %v want %v", status, http.StatusCreated)
+		t.Errorf("Router returned wrong status code: got %v want %v", status, http.StatusCreated)
 	}
 
 	responseBody := recorder.Body.String()
 	if responseBody != returnedWord {
-		t.Errorf("handler returned unexpected body: got %v want %v", responseBody, returnedWord)
+		t.Errorf("Router returned unexpected body: got %v want %v", responseBody, returnedWord)
 	}
 
 }
@@ -170,12 +170,12 @@ func TestAddWord_noDictionary_Failed(t *testing.T) {
 
 	//then
 	if status := recorder.Code; status != http.StatusBadRequest {
-		t.Errorf("handler returned wrong status code: got %v want %v", status, http.StatusBadRequest)
+		t.Errorf("Router returned wrong status code: got %v want %v", status, http.StatusBadRequest)
 	}
 
 	responseBody := recorder.Body.String()
 	if !strings.Contains(responseBody, expectedError.Error()) {
-		t.Errorf("handler returned unexpected body: got %v want %v", responseBody, expectedError)
+		t.Errorf("Router returned unexpected body: got %v want %v", responseBody, expectedError)
 	}
 
 }
@@ -203,12 +203,12 @@ func TestAddWord_jsonMalformed_Failed(t *testing.T) {
 
 	//then
 	if status := recorder.Code; status != http.StatusBadRequest {
-		t.Errorf("handler returned wrong status code: got %v want %v", status, http.StatusBadRequest)
+		t.Errorf("Router returned wrong status code: got %v want %v", status, http.StatusBadRequest)
 	}
 
 	responseBody := recorder.Body.String()
 	if !strings.Contains(responseBody, expectedErrorMessage) {
-		t.Errorf("handler returned unexpected body: got %v want %v", responseBody, expectedErrorMessage)
+		t.Errorf("Router returned unexpected body: got %v want %v", responseBody, expectedErrorMessage)
 	}
 
 }
@@ -244,12 +244,12 @@ func TestListWords(t *testing.T) {
 
 	//then
 	if status := recorder.Code; status != http.StatusOK {
-		t.Errorf("handler returned wrong status code: got %v want %v", status, http.StatusOK)
+		t.Errorf("Router returned wrong status code: got %v want %v", status, http.StatusOK)
 	}
 
 	responseBody := recorder.Body.String()
 	if responseBody != expectedWordsList {
-		t.Errorf("handler returned unexpected body: got %v want %v", responseBody, expectedWordsList)
+		t.Errorf("Router returned unexpected body: got %v want %v", responseBody, expectedWordsList)
 	}
 
 }
@@ -275,11 +275,11 @@ func TestListWords_noAvailableDictionary_returnBadRequest(t *testing.T) {
 
 	//then
 	if status := recorder.Code; status != http.StatusBadRequest {
-		t.Errorf("handler returned wrong status code: got %v want %v", status, http.StatusBadRequest)
+		t.Errorf("Router returned wrong status code: got %v want %v", status, http.StatusBadRequest)
 	}
 
 	responseBody := recorder.Body.String()
 	if !strings.Contains(responseBody, expectedError.Error()) {
-		t.Errorf("handler returned unexpected body: got %v want %v", responseBody, expectedError.Error())
+		t.Errorf("Router returned unexpected body: got %v want %v", responseBody, expectedError.Error())
 	}
 }
