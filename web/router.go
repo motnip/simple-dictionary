@@ -5,30 +5,21 @@ import (
 	"github.com/gorilla/mux"
 	"log"
 	"net/http"
-	c "sermo/controller"
 )
 
 type Router struct {
-	router     *mux.Router
-	controller c.Controller
+	router *mux.Router
 }
 
-func NewRouter(controller c.Controller) *Router {
+func NewRouter() *Router {
 	return &Router{
-		router:     mux.NewRouter().StrictSlash(true),
-		controller: controller,
+		router: mux.NewRouter().StrictSlash(true),
 	}
 }
 
 func (r *Router) RouterStart() {
 	fmt.Println("Server started... ")
 	log.Fatal(http.ListenAndServe(":8080", r.router))
-}
-
-func (r *Router) Init() {
-	r.router.HandleFunc("/dictionary", r.controller.CreateDictionary).Name("createDictionary").Methods(http.MethodPost)
-	r.router.HandleFunc("/word", r.controller.AddWord).Methods(http.MethodPost)
-	r.router.HandleFunc("/word", r.controller.ListWords).GetMethods()
 }
 
 func (r *Router) InitRoute(routeMap *Route) {

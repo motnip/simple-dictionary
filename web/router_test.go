@@ -8,27 +8,6 @@ import (
 	"testing"
 )
 
-func TestNewRouter(t *testing.T) {
-
-	//given
-	ctr := gomock.NewController(t)
-	restFullController := mock_controller.NewMockController(ctr)
-
-	//when
-	sut := NewRouter(restFullController)
-
-	//than
-	sut.Init()
-
-	if sut.router.GetRoute("createDictionary") == nil {
-		t.Errorf("No path returend: got %v want %v", sut.router.Path("/dictionary"), "not nil")
-	}
-
-	if sut.router.GetRoute("createDictionary") == nil {
-		t.Errorf("No path returend: got %v want %v", sut.router.Path("/dictionary"), "not nil")
-	}
-}
-
 func TestRouter_InitRoute(t *testing.T) {
 
 	//given
@@ -46,7 +25,7 @@ func TestRouter_InitRoute(t *testing.T) {
 	expected.HandleFunc(newRoute.Path, newRoute.Function).Name(newRoute.Name).Methods(newRoute.Method)
 
 	//when
-	sut := NewRouter(mockController)
+	sut := NewRouter()
 
 	//than
 	sut.InitRoute(newRoute)
