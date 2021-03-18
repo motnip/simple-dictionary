@@ -15,5 +15,6 @@ func main() {
 	controller := controller.NewController(repository)
 
 	router := web.NewRouter(controller)
+	router.Init()
 	router.RouterStart()
 }
