@@ -30,3 +30,7 @@ func (r *Router) Init() {
 	r.router.HandleFunc("/word", r.controller.AddWord).Methods(http.MethodPost)
 	r.router.HandleFunc("/word", r.controller.ListWords).GetMethods()
 }
+
+func (r *Router) InitRoute(routeMap *Route) {
+	r.router.HandleFunc(routeMap.Path, routeMap.Function).Name(routeMap.Name).Methods(routeMap.Method)
+}
