@@ -44,7 +44,7 @@ func TestMain(m *testing.M) {
 	os.Exit(exitVal)
 }
 
-func TestController_AddNewWord_Succeed(t *testing.T) {
+func TestIntegration_Controller_AddNewWord_Succeed(t *testing.T) {
 
 	//given
 	dictionaryLanguage := "en"
