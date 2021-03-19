@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"errors"
 	"github.com/golang/mock/gomock"
+	"github.com/gorilla/mux"
 	"net/http"
 	"net/http/httptest"
 	"sermo/mocks/repository"
@@ -18,19 +19,19 @@ func TestCreateDictionary(t *testing.T) {
 
 	controller := gomock.NewController(t)
 	repositoryMock := mock_model.NewMockRepository(controller)
+	recorder := httptest.NewRecorder()
 	sut := NewController(repositoryMock)
+	router := mux.NewRouter().StrictSlash(true)
+	router.HandleFunc("/dictionary", sut.CreateDictionary).Methods(http.MethodPost)
 
-	request, err := http.NewRequest("POST", "/dictionary", bytes.NewBuffer([]byte(dictionaryLanguage)))
+	request, err := http.NewRequest(http.MethodPost, "/dictionary", bytes.NewBuffer([]byte(dictionaryLanguage)))
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	recorder := httptest.NewRecorder()
-
 	//when
 	repositoryMock.EXPECT().CreateDictionary(gomock.Eq(dictionaryLanguage)).Times(1)
-
-	http.HandlerFunc(sut.CreateDictionary).ServeHTTP(recorder, request)
+	router.ServeHTTP(recorder, request)
 
 	//then
 	if status := recorder.Code; status != http.StatusCreated {
@@ -50,10 +51,11 @@ func TestCreateDictionary_EmptyLanguage_returnBadRequest(t *testing.T) {
 
 	controller := gomock.NewController(t)
 	repositoryMock := mock_model.NewMockRepository(controller)
-
 	sut := NewController(repositoryMock)
+	router := mux.NewRouter().StrictSlash(true)
+	router.HandleFunc("/dictionary", sut.CreateDictionary).Methods(http.MethodPost)
 
-	request, err := http.NewRequest("POST", "/dictionary", bytes.NewBuffer([]byte(emptyDictionaryLanguage)))
+	request, err := http.NewRequest(http.MethodPost, "/dictionary", bytes.NewBuffer([]byte(emptyDictionaryLanguage)))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -62,8 +64,7 @@ func TestCreateDictionary_EmptyLanguage_returnBadRequest(t *testing.T) {
 
 	//when
 	repositoryMock.EXPECT().CreateDictionary(gomock.Any()).Times(0)
-
-	http.HandlerFunc(sut.CreateDictionary).ServeHTTP(recorder, request)
+	router.ServeHTTP(recorder, request)
 
 	//then
 	if status := recorder.Code; status != http.StatusBadRequest {
@@ -83,14 +84,15 @@ func TestCreateDictionary_existDictionaryForALanguage_returnBadRequest(t *testin
 
 	controller := gomock.NewController(t)
 	repositoryMock := mock_model.NewMockRepository(controller)
-
 	sut := NewController(repositoryMock)
+	router := mux.NewRouter().StrictSlash(true)
+	router.HandleFunc("/dictionary", sut.CreateDictionary).Methods(http.MethodPost)
 
-	firstRequest, err := http.NewRequest("POST", "/dictionary", bytes.NewBuffer([]byte(dictionaryLanguage)))
+	firstRequest, err := http.NewRequest(http.MethodPost, "/dictionary", bytes.NewBuffer([]byte(dictionaryLanguage)))
 	if err != nil {
 		t.Fatal(err)
 	}
-	secondRequest, err := http.NewRequest("POST", "/dictionary", bytes.NewBuffer([]byte(dictionaryLanguage)))
+	secondRequest, err := http.NewRequest(http.MethodPost, "/dictionary", bytes.NewBuffer([]byte(dictionaryLanguage)))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -101,8 +103,8 @@ func TestCreateDictionary_existDictionaryForALanguage_returnBadRequest(t *testin
 	//when
 	repositoryMock.EXPECT().CreateDictionary(gomock.Any()).Return(nil, nil)
 	repositoryMock.EXPECT().CreateDictionary(gomock.Any()).Return(nil, errors.New("forced error"))
-	http.HandlerFunc(sut.CreateDictionary).ServeHTTP(recorderFirstRequest, firstRequest)
-	http.HandlerFunc(sut.CreateDictionary).ServeHTTP(recorderSecondRequest, secondRequest)
+	router.ServeHTTP(recorderFirstRequest, firstRequest)
+	router.ServeHTTP(recorderSecondRequest, secondRequest)
 
 	//then
 	if status := recorderFirstRequest.Code; status != http.StatusCreated {
@@ -122,8 +124,10 @@ func TestAddWord(t *testing.T) {
 	controller := gomock.NewController(t)
 	repositoryMock := mock_model.NewMockRepository(controller)
 	sut := NewController(repositoryMock)
+	router := mux.NewRouter().StrictSlash(true)
+	router.HandleFunc("/word", sut.AddWord).Methods(http.MethodPost)
 
-	request, err := http.NewRequest("POST", "/word", bytes.NewBuffer([]byte(newWord)))
+	request, err := http.NewRequest(http.MethodPost, "/word", bytes.NewBuffer([]byte(newWord)))
 
 	if err != nil {
 		t.Fatal(err)
@@ -133,7 +137,7 @@ func TestAddWord(t *testing.T) {
 
 	//when
 	repositoryMock.EXPECT().AddWord(gomock.Any()).Times(1)
-	http.HandlerFunc(sut.AddWord).ServeHTTP(recorder, request)
+	router.ServeHTTP(recorder, request)
 
 	//then
 	if status := recorder.Code; status != http.StatusCreated {
@@ -155,8 +159,10 @@ func TestAddWord_noDictionary_Failed(t *testing.T) {
 	controller := gomock.NewController(t)
 	repositoryMock := mock_model.NewMockRepository(controller)
 	sut := NewController(repositoryMock)
+	router := mux.NewRouter().StrictSlash(true)
+	router.HandleFunc("/word", sut.AddWord).Methods(http.MethodPost)
 
-	request, err := http.NewRequest("POST", "/word", bytes.NewBuffer([]byte(newWord)))
+	request, err := http.NewRequest(http.MethodPost, "/word", bytes.NewBuffer([]byte(newWord)))
 
 	if err != nil {
 		t.Fatal(err)
@@ -166,7 +172,7 @@ func TestAddWord_noDictionary_Failed(t *testing.T) {
 
 	//when
 	repositoryMock.EXPECT().AddWord(gomock.Any()).Return(expectedError)
-	http.HandlerFunc(sut.AddWord).ServeHTTP(recorder, request)
+	router.ServeHTTP(recorder, request)
 
 	//then
 	if status := recorder.Code; status != http.StatusBadRequest {
@@ -188,8 +194,10 @@ func TestAddWord_jsonMalformed_Failed(t *testing.T) {
 	controller := gomock.NewController(t)
 	repositoryMock := mock_model.NewMockRepository(controller)
 	sut := NewController(repositoryMock)
+	router := mux.NewRouter().StrictSlash(true)
+	router.HandleFunc("/word", sut.AddWord).Methods(http.MethodPost)
 
-	request, err := http.NewRequest("POST", "/word", bytes.NewBuffer([]byte(newWord)))
+	request, err := http.NewRequest(http.MethodPost, "/word", bytes.NewBuffer([]byte(newWord)))
 
 	if err != nil {
 		t.Fatal(err)
@@ -199,7 +207,7 @@ func TestAddWord_jsonMalformed_Failed(t *testing.T) {
 
 	//when
 	repositoryMock.EXPECT().AddWord(gomock.Any()).Times(0)
-	http.HandlerFunc(sut.AddWord).ServeHTTP(recorder, request)
+	router.ServeHTTP(recorder, request)
 
 	//then
 	if status := recorder.Code; status != http.StatusBadRequest {
@@ -230,8 +238,10 @@ func TestListWords(t *testing.T) {
 	controller := gomock.NewController(t)
 	repositoryMock := mock_model.NewMockRepository(controller)
 	sut := NewController(repositoryMock)
+	router := mux.NewRouter().StrictSlash(true)
+	router.HandleFunc("/word", sut.ListWords).Methods(http.MethodGet)
 
-	request, err := http.NewRequest("get", "/word", nil)
+	request, err := http.NewRequest(http.MethodGet, "/word", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -240,7 +250,7 @@ func TestListWords(t *testing.T) {
 
 	//when
 	repositoryMock.EXPECT().ListWords().Return(words, nil)
-	http.HandlerFunc(sut.ListWords).ServeHTTP(recorder, request)
+	router.ServeHTTP(recorder, request)
 
 	//then
 	if status := recorder.Code; status != http.StatusOK {
@@ -261,8 +271,10 @@ func TestListWords_noAvailableDictionary_returnBadRequest(t *testing.T) {
 	controller := gomock.NewController(t)
 	repositoryMock := mock_model.NewMockRepository(controller)
 	sut := NewController(repositoryMock)
+	router := mux.NewRouter().StrictSlash(true)
+	router.HandleFunc("/word", sut.ListWords).Methods(http.MethodGet)
 
-	request, err := http.NewRequest("get", "/word", nil)
+	request, err := http.NewRequest(http.MethodGet, "/word", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -271,7 +283,7 @@ func TestListWords_noAvailableDictionary_returnBadRequest(t *testing.T) {
 
 	//when
 	repositoryMock.EXPECT().ListWords().Return(nil, expectedError)
-	http.HandlerFunc(sut.ListWords).ServeHTTP(recorder, request)
+	router.ServeHTTP(recorder, request)
 
 	//then
 	if status := recorder.Code; status != http.StatusBadRequest {
