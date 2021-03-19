@@ -49,9 +49,8 @@ func TestController_AddNewWord_Succeed(t *testing.T) {
 	//given
 	dictionaryLanguage := "en"
 	newWord := "{\"Label\":\"hello\",\"Meaning\":\"ciao\",\"Sentence\":\"\"}"
-	returnedWord := newWord + "\n"
 
-	expectedWordsList := "[" + newWord + "]\n"
+	expectedWordsList := "[" + newWord + "]"
 
 	requestCreateDictionary, err := http.NewRequest(http.MethodPost, "/dictionary", bytes.NewBuffer([]byte(dictionaryLanguage)))
 	if err != nil {
@@ -84,8 +83,8 @@ func TestController_AddNewWord_Succeed(t *testing.T) {
 		t.Errorf("Router returned wrong status code: got %v want %v", status, http.StatusCreated)
 	}
 	responseBody := recorderAddWord.Body.String()
-	if responseBody != returnedWord {
-		t.Errorf("Router returned unexpected body: got %v want %v", responseBody, returnedWord)
+	if responseBody != newWord {
+		t.Errorf("Router returned unexpected body: got %v want %v", responseBody, newWord)
 	}
 
 	if status := recorderListWord.Code; status != http.StatusOK {

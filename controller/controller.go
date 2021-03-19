@@ -2,7 +2,6 @@ package controller
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"sermo/model"
@@ -44,7 +43,7 @@ func (c *controller) CreateDictionary(httpResponse http.ResponseWriter, httpRequ
 	}
 
 	httpResponse.WriteHeader(http.StatusCreated)
-	fmt.Fprintf(httpResponse, input)
+	httpResponse.Write([]byte(input))
 }
 
 func (c *controller) AddWord(httpResponse http.ResponseWriter, httpRequest *http.Request) {
@@ -70,7 +69,12 @@ func (c *controller) AddWord(httpResponse http.ResponseWriter, httpRequest *http
 	httpResponse.WriteHeader(http.StatusCreated)
 
 	//https://stackoverflow.com/questions/36319918/why-does-json-encoder-add-an-extra-line
-	json.NewEncoder(httpResponse).Encode(newWordDto)
+	output, err := json.Marshal(newWordDto)
+	if err != nil {
+		http.Error(httpResponse, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	httpResponse.Write(output)
 }
 
 func (c *controller) ListWords(httpResponse http.ResponseWriter, httpRequest *http.Request) {
@@ -80,6 +84,11 @@ func (c *controller) ListWords(httpResponse http.ResponseWriter, httpRequest *ht
 		http.Error(httpResponse, err.Error(), http.StatusBadRequest)
 		return
 	}
-
-	json.NewEncoder(httpResponse).Encode(words)
+	//json.NewEncoder(httpResponse).Encode(words)
+	output, err := json.Marshal(words)
+	if err != nil {
+		http.Error(httpResponse, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	httpResponse.Write(output)
 }

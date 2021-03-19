@@ -119,7 +119,7 @@ func TestCreateDictionary_existDictionaryForALanguage_returnBadRequest(t *testin
 func TestAddWord(t *testing.T) {
 	//given
 	newWord := "{\"Label\":\"hello\",\"Meaning\":\"ciao\",\"Sentence\":\"\"}"
-	returnedWord := "{\"Label\":\"hello\",\"Meaning\":\"ciao\",\"Sentence\":\"\"}\n"
+	returnedWord := "{\"Label\":\"hello\",\"Meaning\":\"ciao\",\"Sentence\":\"\"}"
 
 	controller := gomock.NewController(t)
 	repositoryMock := mock_model.NewMockRepository(controller)
@@ -233,7 +233,7 @@ func TestListWords(t *testing.T) {
 		Meaning: "bar",
 	})
 
-	expectedWordsList := "[{\"Label\":\"foo\",\"Meaning\":\"foo\",\"Sentence\":\"\"},{\"Label\":\"bar\",\"Meaning\":\"bar\",\"Sentence\":\"\"}]\n"
+	expectedWordsList := "[{\"Label\":\"foo\",\"Meaning\":\"foo\",\"Sentence\":\"\"},{\"Label\":\"bar\",\"Meaning\":\"bar\",\"Sentence\":\"\"}]"
 
 	controller := gomock.NewController(t)
 	repositoryMock := mock_model.NewMockRepository(controller)
