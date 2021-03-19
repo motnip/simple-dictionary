@@ -25,3 +25,7 @@ func (r *Router) RouterStart() {
 func (r *Router) InitRoute(routeMap *Route) {
 	r.router.HandleFunc(routeMap.Path, routeMap.Function).Name(routeMap.Name).Methods(routeMap.Method)
 }
+
+func (r *Router) Router() *mux.Router {
+	return r.router
+}
