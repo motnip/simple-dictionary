@@ -63,6 +63,20 @@ func (mr *MockRepositoryMockRecorder) CreateDictionary(language interface{}) *go
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateDictionary", reflect.TypeOf((*MockRepository)(nil).CreateDictionary), language)
 }
 
+// ListDictionary mocks base method.
+func (m *MockRepository) ListDictionary() []*model.Dictionary {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListDictionary")
+	ret0, _ := ret[0].([]*model.Dictionary)
+	return ret0
+}
+
+// ListDictionary indicates an expected call of ListDictionary.
+func (mr *MockRepositoryMockRecorder) ListDictionary() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListDictionary", reflect.TypeOf((*MockRepository)(nil).ListDictionary))
+}
+
 // ListWords mocks base method.
 func (m *MockRepository) ListWords() ([]*model.Word, error) {
 	m.ctrl.T.Helper()

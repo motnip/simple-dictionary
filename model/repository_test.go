@@ -47,22 +47,6 @@ func TestCreateDictionary_dictionaryAlreadyExists_Fail(t *testing.T) {
 	}
 }
 
-func TestExistsDictionary_dictionaryAlreadyExists_Fail(t *testing.T) {
-
-	repo := NewRepository()
-
-	_, err := repo.CreateDictionary("en")
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	existsDictionary := repo.existsDictionaryOfLanguage("en")
-
-	if !existsDictionary {
-		t.Errorf("expected %v got %v", true, false)
-	}
-}
-
 func TestListDictionary(t *testing.T) {
 
 	repo := NewRepository()

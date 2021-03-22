@@ -6,13 +6,14 @@ type Repository interface {
 	CreateDictionary(language string) (*Dictionary, error)
 	AddWord(word *Word) error
 	ListWords() ([]*Word, error)
+	ListDictionary() []*Dictionary
 }
 
 type repository struct {
 	Dictionary *Dictionary
 }
 
-func NewRepository() *repository {
+func NewRepository() Repository {
 	return &repository{}
 }
 
