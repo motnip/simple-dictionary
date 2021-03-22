@@ -85,7 +85,7 @@ func (w *wordcontroller) GetListWordRoute() *web.Route {
 	return &web.Route{
 		Path:     "/word",
 		Function: w.ListWords,
-		Method:   http.MethodPost, //questo deve essere get, ma lasciamo post e vediamo se qualche test fallisce
+		Method:   http.MethodGet,
 		Name:     "addWord",
 	}
 }

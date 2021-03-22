@@ -24,12 +24,7 @@ func main() {
 		Name:     "createDictionary",
 	})
 	router.InitRoute(wordController.GetAddWordRoute())
-	router.InitRoute(&web.Route{
-		Path:     "/word",
-		Function: wordController.ListWords,
-		Method:   http.MethodGet,
-		Name:     "listWords",
-	})
+	router.InitRoute(wordController.GetListWordRoute())
 
 	router.RouterStart()
 }
