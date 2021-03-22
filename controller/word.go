@@ -5,11 +5,14 @@ import (
 	"io/ioutil"
 	"net/http"
 	"sermo/model"
+	"sermo/web"
 )
 
 type WordController interface {
 	AddWord(httpResponse http.ResponseWriter, httpRequest *http.Request)
 	ListWords(httpResponse http.ResponseWriter, httpRequest *http.Request)
+	GetAddWordRoute() *web.Route
+	GetListWordRoute() *web.Route
 }
 
 type wordcontroller struct {
@@ -67,4 +70,22 @@ func (w *wordcontroller) ListWords(httpResponse http.ResponseWriter, httpRequest
 		return
 	}
 	httpResponse.Write(output)
+}
+
+func (w *wordcontroller) GetAddWordRoute() *web.Route {
+	return &web.Route{
+		Path:     "/word",
+		Function: w.AddWord,
+		Method:   http.MethodPost,
+		Name:     "addWord",
+	}
+}
+
+func (w *wordcontroller) GetListWordRoute() *web.Route {
+	return &web.Route{
+		Path:     "/word",
+		Function: w.ListWords,
+		Method:   http.MethodPost, //questo deve essere get, ma lasciamo post e vediamo se qualche test fallisce
+		Name:     "addWord",
+	}
 }

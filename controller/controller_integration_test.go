@@ -26,18 +26,8 @@ func TestMain(m *testing.M) {
 		Method:   http.MethodPost,
 		Name:     "createDictionary",
 	})
-	newRouter.InitRoute(&web.Route{
-		Path:     "/word",
-		Function: wordController.AddWord,
-		Method:   http.MethodPost,
-		Name:     "addWord",
-	})
-	newRouter.InitRoute(&web.Route{
-		Path:     "/word",
-		Function: wordController.ListWords,
-		Method:   http.MethodGet,
-		Name:     "listWords",
-	})
+	newRouter.InitRoute(wordController.GetAddWordRoute())
+	newRouter.InitRoute(wordController.GetListWordRoute())
 
 	router = newRouter.Router()
 
