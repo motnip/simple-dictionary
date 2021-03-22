@@ -13,24 +13,25 @@ func main() {
 	fmt.Println("Server starting... ")
 
 	repository := model.NewRepository()
-	controller := controller.NewController(repository)
+	dictionaryController := controller.NewController(repository)
+	wordController := controller.NewWordController(repository)
 
 	router := web.NewRouter()
 	router.InitRoute(&web.Route{
 		Path:     "/dictionary",
-		Function: controller.CreateDictionary,
+		Function: dictionaryController.CreateDictionary,
 		Method:   http.MethodPost,
 		Name:     "createDictionary",
 	})
 	router.InitRoute(&web.Route{
 		Path:     "/word",
-		Function: controller.AddWord,
+		Function: wordController.AddWord,
 		Method:   http.MethodPost,
 		Name:     "addWord",
 	})
 	router.InitRoute(&web.Route{
 		Path:     "/word",
-		Function: controller.ListWords,
+		Function: wordController.ListWords,
 		Method:   http.MethodGet,
 		Name:     "listWords",
 	})

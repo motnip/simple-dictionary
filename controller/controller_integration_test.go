@@ -16,24 +16,25 @@ var router *mux.Router
 func TestMain(m *testing.M) {
 
 	repository := model.NewRepository()
-	controller := NewController(repository)
+	dictionaryController := NewController(repository)
+	wordController := NewWordController(repository)
 
 	newRouter := web.NewRouter()
 	newRouter.InitRoute(&web.Route{
 		Path:     "/dictionary",
-		Function: controller.CreateDictionary,
+		Function: dictionaryController.CreateDictionary,
 		Method:   http.MethodPost,
 		Name:     "createDictionary",
 	})
 	newRouter.InitRoute(&web.Route{
 		Path:     "/word",
-		Function: controller.AddWord,
+		Function: wordController.AddWord,
 		Method:   http.MethodPost,
 		Name:     "addWord",
 	})
 	newRouter.InitRoute(&web.Route{
 		Path:     "/word",
-		Function: controller.ListWords,
+		Function: wordController.ListWords,
 		Method:   http.MethodGet,
 		Name:     "listWords",
 	})
