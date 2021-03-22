@@ -23,12 +23,7 @@ func main() {
 		Method:   http.MethodPost,
 		Name:     "createDictionary",
 	})
-	router.InitRoute(&web.Route{
-		Path:     "/word",
-		Function: wordController.AddWord,
-		Method:   http.MethodPost,
-		Name:     "addWord",
-	})
+	router.InitRoute(wordController.GetAddWordRoute())
 	router.InitRoute(&web.Route{
 		Path:     "/word",
 		Function: wordController.ListWords,
