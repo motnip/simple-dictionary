@@ -20,7 +20,7 @@ func TestCreateDictionary(t *testing.T) {
 	recorder := httptest.NewRecorder()
 	sut := NewController(repositoryMock)
 	router := mux.NewRouter().StrictSlash(true)
-	router.HandleFunc("/dictionary", sut.CreateDictionary).Methods(http.MethodPost)
+	router.HandleFunc(sut.GetCreateDictionaryRoute().Path, sut.GetCreateDictionaryRoute().Function).Methods(sut.GetCreateDictionaryRoute().Method)
 
 	request, err := http.NewRequest(http.MethodPost, "/dictionary", bytes.NewBuffer([]byte(dictionaryLanguage)))
 	if err != nil {
@@ -51,7 +51,7 @@ func TestCreateDictionary_EmptyLanguage_returnBadRequest(t *testing.T) {
 	repositoryMock := mock_model.NewMockRepository(controller)
 	sut := NewController(repositoryMock)
 	router := mux.NewRouter().StrictSlash(true)
-	router.HandleFunc("/dictionary", sut.CreateDictionary).Methods(http.MethodPost)
+	router.HandleFunc(sut.GetCreateDictionaryRoute().Path, sut.GetCreateDictionaryRoute().Function).Methods(sut.GetCreateDictionaryRoute().Method)
 
 	request, err := http.NewRequest(http.MethodPost, "/dictionary", bytes.NewBuffer([]byte(emptyDictionaryLanguage)))
 	if err != nil {
@@ -84,7 +84,7 @@ func TestCreateDictionary_existDictionaryForALanguage_returnBadRequest(t *testin
 	repositoryMock := mock_model.NewMockRepository(controller)
 	sut := NewController(repositoryMock)
 	router := mux.NewRouter().StrictSlash(true)
-	router.HandleFunc("/dictionary", sut.CreateDictionary).Methods(http.MethodPost)
+	router.HandleFunc(sut.GetCreateDictionaryRoute().Path, sut.GetCreateDictionaryRoute().Function).Methods(sut.GetCreateDictionaryRoute().Method)
 
 	firstRequest, err := http.NewRequest(http.MethodPost, "/dictionary", bytes.NewBuffer([]byte(dictionaryLanguage)))
 	if err != nil {

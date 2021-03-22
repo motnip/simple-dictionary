@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"net/http"
 	"sermo/controller"
 	"sermo/model"
 	"sermo/web"
@@ -17,12 +16,7 @@ func main() {
 	wordController := controller.NewWordController(repository)
 
 	router := web.NewRouter()
-	router.InitRoute(&web.Route{
-		Path:     "/dictionary",
-		Function: dictionaryController.CreateDictionary,
-		Method:   http.MethodPost,
-		Name:     "createDictionary",
-	})
+	router.InitRoute(dictionaryController.GetCreateDictionaryRoute())
 	router.InitRoute(wordController.GetAddWordRoute())
 	router.InitRoute(wordController.GetListWordRoute())
 

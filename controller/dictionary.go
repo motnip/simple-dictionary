@@ -4,10 +4,12 @@ import (
 	"io/ioutil"
 	"net/http"
 	"sermo/model"
+	"sermo/web"
 )
 
 type DictionaryController interface {
 	CreateDictionary(httpResponse http.ResponseWriter, httpRequest *http.Request)
+	GetCreateDictionaryRoute() *web.Route
 }
 
 type dictionarycontroller struct {
@@ -41,4 +43,13 @@ func (d *dictionarycontroller) CreateDictionary(httpResponse http.ResponseWriter
 
 	httpResponse.WriteHeader(http.StatusCreated)
 	httpResponse.Write([]byte(input))
+}
+
+func (d *dictionarycontroller) GetCreateDictionaryRoute() *web.Route {
+	return &web.Route{
+		Path:     "/dictionary",
+		Function: d.CreateDictionary,
+		Method:   http.MethodPost,
+		Name:     "createDictionary",
+	}
 }
