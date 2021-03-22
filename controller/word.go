@@ -2,10 +2,10 @@ package controller
 
 import (
 	"encoding/json"
+	"github.com/motnip/sermo/model"
+	"github.com/motnip/sermo/web"
 	"io/ioutil"
 	"net/http"
-	"sermo/model"
-	"sermo/web"
 )
 
 type WordController interface {

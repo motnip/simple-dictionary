@@ -3,11 +3,11 @@ package controller
 import (
 	"bytes"
 	"github.com/gorilla/mux"
+	"github.com/motnip/sermo/model"
+	"github.com/motnip/sermo/web"
 	"net/http"
 	"net/http/httptest"
 	"os"
-	"sermo/model"
-	"sermo/web"
 	"testing"
 )
 

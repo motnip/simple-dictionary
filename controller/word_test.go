@@ -5,10 +5,10 @@ import (
 	"errors"
 	"github.com/golang/mock/gomock"
 	"github.com/gorilla/mux"
+	mock_model "github.com/motnip/sermo/mocks/model"
+	"github.com/motnip/sermo/model"
 	"net/http"
 	"net/http/httptest"
-	mock_model "sermo/mocks/repository"
-	"sermo/model"
 	"strings"
 	"testing"
 )

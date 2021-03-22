@@ -2,9 +2,9 @@ package main
 
 import (
 	"fmt"
-	"sermo/controller"
-	"sermo/model"
-	"sermo/web"
+	"github.com/motnip/sermo/controller"
+	"github.com/motnip/sermo/model"
+	"github.com/motnip/sermo/web"
 )
 
 func main() {

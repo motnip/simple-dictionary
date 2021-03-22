@@ -5,9 +5,9 @@ import (
 	"errors"
 	"github.com/golang/mock/gomock"
 	"github.com/gorilla/mux"
+	"github.com/motnip/sermo/mocks/model"
 	"net/http"
 	"net/http/httptest"
-	"sermo/mocks/repository"
 	"testing"
 )
 

@@ -3,8 +3,8 @@ package web
 import (
 	"github.com/golang/mock/gomock"
 	"github.com/gorilla/mux"
+	mock_controller "github.com/motnip/sermo/mocks/controller"
 	"net/http"
-	mock_controller "sermo/mocks/controller"
 	"testing"
 )
 

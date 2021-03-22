@@ -6,9 +6,9 @@ package mock_model
 
 import (
 	reflect "reflect"
-	model "sermo/model"
 
 	gomock "github.com/golang/mock/gomock"
+	model "github.com/motnip/sermo/model"
 )
 
 // MockRepository is a mock of Repository interface.
