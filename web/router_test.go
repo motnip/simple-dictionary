@@ -12,7 +12,7 @@ func TestRouter_InitRoute(t *testing.T) {
 
 	//given
 	ctr := gomock.NewController(t)
-	mockController := mock_controller.NewMockController(ctr)
+	mockController := mock_controller.NewMockDictionaryController(ctr)
 
 	newRoute := &Route{
 		Path:     "/foo",
