@@ -22,7 +22,7 @@ func TestAddWord(t *testing.T) {
 	repositoryMock := mock_model.NewMockRepository(controller)
 	sut := NewWordController(repositoryMock)
 	router := mux.NewRouter().StrictSlash(true)
-	router.HandleFunc("/word", sut.AddWord).Methods(http.MethodPost)
+	router.HandleFunc(sut.GetAddWordRoute().Path, sut.GetAddWordRoute().Function).Methods(sut.GetAddWordRoute().Method)
 
 	request, err := http.NewRequest(http.MethodPost, "/word", bytes.NewBuffer([]byte(newWord)))
 
@@ -57,7 +57,7 @@ func TestAddWord_noDictionary_Failed(t *testing.T) {
 	repositoryMock := mock_model.NewMockRepository(controller)
 	sut := NewWordController(repositoryMock)
 	router := mux.NewRouter().StrictSlash(true)
-	router.HandleFunc("/word", sut.AddWord).Methods(http.MethodPost)
+	router.HandleFunc(sut.GetAddWordRoute().Path, sut.GetAddWordRoute().Function).Methods(sut.GetAddWordRoute().Method)
 
 	request, err := http.NewRequest(http.MethodPost, "/word", bytes.NewBuffer([]byte(newWord)))
 
@@ -92,7 +92,7 @@ func TestAddWord_jsonMalformed_Failed(t *testing.T) {
 	repositoryMock := mock_model.NewMockRepository(controller)
 	sut := NewWordController(repositoryMock)
 	router := mux.NewRouter().StrictSlash(true)
-	router.HandleFunc("/word", sut.AddWord).Methods(http.MethodPost)
+	router.HandleFunc(sut.GetAddWordRoute().Path, sut.GetAddWordRoute().Function).Methods(sut.GetAddWordRoute().Method)
 
 	request, err := http.NewRequest(http.MethodPost, "/word", bytes.NewBuffer([]byte(newWord)))
 
@@ -136,7 +136,7 @@ func TestListWords(t *testing.T) {
 	repositoryMock := mock_model.NewMockRepository(controller)
 	sut := NewWordController(repositoryMock)
 	router := mux.NewRouter().StrictSlash(true)
-	router.HandleFunc("/word", sut.ListWords).Methods(http.MethodGet)
+	router.HandleFunc(sut.GetListWordRoute().Path, sut.GetListWordRoute().Function).Methods(sut.GetListWordRoute().Method)
 
 	request, err := http.NewRequest(http.MethodGet, "/word", nil)
 	if err != nil {
@@ -169,7 +169,7 @@ func TestListWords_noAvailableDictionary_returnBadRequest(t *testing.T) {
 	repositoryMock := mock_model.NewMockRepository(controller)
 	sut := NewWordController(repositoryMock)
 	router := mux.NewRouter().StrictSlash(true)
-	router.HandleFunc("/word", sut.ListWords).Methods(http.MethodGet)
+	router.HandleFunc(sut.GetListWordRoute().Path, sut.GetListWordRoute().Function).Methods(sut.GetListWordRoute().Method)
 
 	request, err := http.NewRequest(http.MethodGet, "/word", nil)
 	if err != nil {
