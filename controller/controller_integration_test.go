@@ -46,6 +46,10 @@ func TestMain(m *testing.M) {
 
 func TestIntegration_Controller_AddNewWord_Succeed(t *testing.T) {
 
+	if testing.Short() {
+		t.Skip("skipping testing in short mode")
+	}
+
 	//given
 	dictionaryLanguage := "en"
 	newWord := "{\"Label\":\"hello\",\"Meaning\":\"ciao\",\"Sentence\":\"\"}"
