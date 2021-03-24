@@ -1,3 +1,8 @@
+.PHONY: all test unit integr mock
+
+mockfolder=mocks
+prjroot=github.com/motnip/sermo/
+
 all: lint fmt
 
 lint:
@@ -22,7 +27,8 @@ integr:
 
 mock:
 	@echo "generating mocks"
-	# the package path and interface name must be parameters
-	# the package root path is github.com/motnip/sermo/ and must be omitted
-	# the name of the mock file is the name lowercase name of the interface
-	mockgen -destination=mock/mock_test.go -package=mock github.com/motnip/sermo/controller ...
+	@#https://www.gnu.org/software/bash/manual/html_node/Command-Substitution.html
+	$(eval iinterface=$(shell echo $(interface) | tr '[:upper:]' '[:lower:]'))
+	@mockgen -destination=$(mockfolder)/$(package)/mock_$(iinterface).go -package=$(mockfolder) $(prjroot)$(package) $(interface)
+	@echo "github.com/motnip/sermo/$(mockfolder)/$(package):"
+	@ls -1 ./mocks/$(package)
