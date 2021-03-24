@@ -23,7 +23,7 @@ unit:
 
 integr:
 	@echo "  >  Running integration tests..."
-	@go test ./... -v -cover -failfast
+	@go test -v ./... -run TestIntegration --failfast
 
 mock:
 	@echo "  >  Generating mocks..."
