@@ -7,23 +7,23 @@ all: lint fmt
 
 lint:
 	@echo "linting...linting"
-	golint ./...
+	@golint ./...
 
 fmt:
 	@echo "verify formatting..."
-	go fmt ./...
+	@go fmt ./...
 
 test:
 	@echo "running all tests..."
-	go test ./... -v -cover -failfast -short
+	@go test ./... -v -cover -failfast
 
 unit:
 	@echo "running unit tests..."
-	go test ./... -v -cover -failfast -short
+	@go test ./... -v -cover -failfast -short
 
 integr:
 	@echo "running integration tests..."
-	go test ./... -v -cover -failfast -short
+	@go test ./... -v -cover -failfast
 
 mock:
 	@echo "generating mocks"
