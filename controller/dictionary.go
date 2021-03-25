@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"encoding/json"
 	"github.com/motnip/sermo/model"
 	"github.com/motnip/sermo/web"
 	"io/ioutil"
@@ -10,6 +11,7 @@ import (
 type DictionaryController interface {
 	CreateDictionary(httpResponse http.ResponseWriter, httpRequest *http.Request)
 	GetCreateDictionaryRoute() *web.Route
+	ListAllDictionary(httpResponse http.ResponseWriter, httpRequest *http.Request)
 }
 
 type dictionarycontroller struct {
@@ -43,6 +45,19 @@ func (d *dictionarycontroller) CreateDictionary(httpResponse http.ResponseWriter
 
 	httpResponse.WriteHeader(http.StatusCreated)
 	httpResponse.Write([]byte(input))
+}
+
+func (d *dictionarycontroller) ListAllDictionary(httpResponse http.ResponseWriter, httpRequest *http.Request) {
+
+	dictionaries := d.repository.ListDictionary()
+
+	output, err := json.Marshal(dictionaries)
+	if err != nil {
+		http.Error(httpResponse, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	httpResponse.WriteHeader(http.StatusOK)
+	httpResponse.Write(output)
 }
 
 func (d *dictionarycontroller) GetCreateDictionaryRoute() *web.Route {

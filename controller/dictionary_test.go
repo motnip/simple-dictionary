@@ -6,8 +6,10 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/gorilla/mux"
 	"github.com/motnip/sermo/mocks/model"
+	"github.com/motnip/sermo/model"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 )
 
@@ -111,5 +113,51 @@ func TestCreateDictionary_existDictionaryForALanguage_returnBadRequest(t *testin
 
 	if status := recorderSecondRequest.Code; status != http.StatusBadRequest {
 		t.Errorf("Router returned wrong status code: got %v want %v", status, http.StatusBadRequest)
+	}
+}
+
+func TestListDictionary_Succeed(t *testing.T) {
+	//given
+	controller := gomock.NewController(t)
+	repositoryMock := mock_model.NewMockRepository(controller)
+	sut := NewController(repositoryMock)
+	router := mux.NewRouter().StrictSlash(true)
+	router.HandleFunc("/dictionary", sut.ListAllDictionary).Methods(http.MethodGet)
+
+	dictionaryList := make([]*model.Dictionary, 0)
+	words := make([]*model.Word, 0)
+	words = append(words, &model.Word{
+		Label:    "foo",
+		Meaning:  "bar",
+		Sentence: "var",
+	})
+	expectedReturn := model.Dictionary{
+		Language: "en",
+		Words:    words,
+	}
+
+	dictionaryList = append(dictionaryList, &expectedReturn)
+
+	expectedList := "[{\"Language\":\"en\",\"Words\":[{\"Label\":\"foo\",\"Meaning\":\"bar\",\"Sentence\":\"var\"}]}]"
+
+	request, err := http.NewRequest(http.MethodGet, "/dictionary", bytes.NewBuffer([]byte(expectedList)))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	recorder := httptest.NewRecorder()
+	//when
+	repositoryMock.EXPECT().ListDictionary().Return(dictionaryList)
+	router.ServeHTTP(recorder, request)
+
+	//then
+	if status := recorder.Code; status != http.StatusOK {
+		t.Errorf("Router returned wrong status code: got %v want %v", status, http.StatusOK)
+	}
+
+	responseBody := recorder.Body.String()
+	//if responseBody != expectedList {
+	if !strings.Contains(responseBody, expectedList) {
+		t.Errorf("Router returned unexpected body: got %v want %v", responseBody, expectedList)
 	}
 }
