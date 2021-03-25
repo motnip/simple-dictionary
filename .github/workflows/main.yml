@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: CI
+name: sermo-be
 
 # Controls when the action will run. 
 on:
@@ -30,8 +30,11 @@ jobs:
         with:
           go-version: 1.15
 
+      - name: Lint
+        run: golint ./...
+
       - name: Build
         run: go build -v ./...
 
       - name: Test
-        run: go test -v ./...
+        run: go test -v ./... -v -cover -failfast
