@@ -122,7 +122,7 @@ func TestListDictionary_Succeed(t *testing.T) {
 	repositoryMock := mock_model.NewMockRepository(controller)
 	sut := NewController(repositoryMock)
 	router := mux.NewRouter().StrictSlash(true)
-	router.HandleFunc("/dictionary", sut.ListAllDictionary).Methods(http.MethodGet)
+	router.HandleFunc(sut.GetListAllDictionary().Path, sut.GetListAllDictionary().Function).Methods(sut.GetListAllDictionary().Method)
 
 	dictionaryList := make([]*model.Dictionary, 0)
 	words := make([]*model.Word, 0)

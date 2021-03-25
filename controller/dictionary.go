@@ -10,8 +10,9 @@ import (
 
 type DictionaryController interface {
 	CreateDictionary(httpResponse http.ResponseWriter, httpRequest *http.Request)
-	GetCreateDictionaryRoute() *web.Route
 	ListAllDictionary(httpResponse http.ResponseWriter, httpRequest *http.Request)
+	GetCreateDictionaryRoute() *web.Route
+	GetListAllDictionary() *web.Route
 }
 
 type dictionarycontroller struct {
@@ -66,5 +67,14 @@ func (d *dictionarycontroller) GetCreateDictionaryRoute() *web.Route {
 		Function: d.CreateDictionary,
 		Method:   http.MethodPost,
 		Name:     "createDictionary",
+	}
+}
+
+func (d *dictionarycontroller) GetListAllDictionary() *web.Route {
+	return &web.Route{
+		Path:     "/dictionary",
+		Function: d.ListAllDictionary,
+		Method:   http.MethodGet,
+		Name:     "listAllDictionary",
 	}
 }
