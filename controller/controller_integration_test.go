@@ -2,32 +2,25 @@ package controller
 
 import (
 	"bytes"
-	"github.com/gorilla/mux"
-	"github.com/motnip/sermo/model"
-	"github.com/motnip/sermo/web"
 	"net/http"
 	"net/http/httptest"
 	"os"
 	"testing"
+
+	"github.com/gorilla/mux"
+	"github.com/motnip/sermo/model"
+	"github.com/motnip/sermo/web"
 )
 
 var router *mux.Router
+var repository model.Repository
+var dictionaryController DictionaryController
+var wordController WordController
 
 func TestMain(m *testing.M) {
-
-	repository := model.NewRepository()
-	dictionaryController := NewController(repository)
-	wordController := NewWordController(repository)
-
-	newRouter := web.NewRouter()
-	newRouter.InitRoute(dictionaryController.GetCreateDictionaryRoute())
-	newRouter.InitRoute(dictionaryController.GetListAllDictionary())
-	newRouter.InitRoute(wordController.GetAddWordRoute())
-	newRouter.InitRoute(wordController.GetListWordRoute())
-
-	router = newRouter.Router()
-
+	setUp()
 	exitVal := m.Run()
+
 	os.Exit(exitVal)
 }
 
@@ -36,6 +29,8 @@ func TestIntegration_Controller_AddNewWord_Succeed(t *testing.T) {
 	if testing.Short() {
 		t.Skip("skipping testing in short mode")
 	}
+
+	defer tearDown()
 
 	//given
 	dictionaryLanguage := "en"
@@ -94,11 +89,10 @@ func TestIntegration_Controller_CreateDictionary_Succeed(t *testing.T) {
 		t.Skip("skipping testing in short mode")
 	}
 
+	defer tearDown()
+
 	//given
 	dictionaryLanguage := "en"
-	//newWord := "{\"Label\":\"hello\",\"Meaning\":\"ciao\",\"Sentence\":\"\"}"
-
-	//expectedWordsList := "[" + newWord + "]"
 
 	requestCreateDictionary, err := http.NewRequest(http.MethodPost, "/dictionary", bytes.NewBuffer([]byte(dictionaryLanguage)))
 	if err != nil {
@@ -138,6 +132,8 @@ func TestIntegration_Controller_NoDictionaryExists_Failed(t *testing.T) {
 		t.Skip("skipping testing in short mode")
 	}
 
+	defer tearDown()
+
 	//given
 	newWord := "{\"Label\":\"hello\",\"Meaning\":\"ciao\",\"Sentence\":\"\"}"
 	expectedErrorMessage := "no dictionary available\n"
@@ -160,7 +156,7 @@ func TestIntegration_Controller_NoDictionaryExists_Failed(t *testing.T) {
 
 	//then
 
-	if status := recorderAddWord.Code; status != http.StatusOK {
+	if status := recorderAddWord.Code; status != http.StatusBadRequest {
 		t.Errorf("Router returned wrong status code: got %v want %v", status, http.StatusBadRequest)
 	}
 	responseBody := recorderAddWord.Body.String()
@@ -176,4 +172,22 @@ func TestIntegration_Controller_NoDictionaryExists_Failed(t *testing.T) {
 	if responseBody != expectedErrorMessage {
 		t.Errorf("Router returned unexpected body: got %v want %v", responseBody, expectedErrorMessage)
 	}
+}
+
+func setUp() {
+	repository = model.NewRepository()
+	dictionaryController = NewController(repository)
+	wordController = NewWordController(repository)
+
+	newRouter := web.NewRouter()
+	newRouter.InitRoute(dictionaryController.GetCreateDictionaryRoute())
+	newRouter.InitRoute(dictionaryController.GetListAllDictionary())
+	newRouter.InitRoute(wordController.GetAddWordRoute())
+	newRouter.InitRoute(wordController.GetListWordRoute())
+
+	router = newRouter.Router()
+}
+
+func tearDown() {
+	repository.DeleteDictionary()
 }

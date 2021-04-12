@@ -4,6 +4,7 @@ import "errors"
 
 type Repository interface {
 	CreateDictionary(language string) (*Dictionary, error)
+	DeleteDictionary()
 	AddWord(word *Word) error
 	ListWords() ([]*Word, error)
 	ListDictionary() []*Dictionary
@@ -28,6 +29,10 @@ func (r *repository) CreateDictionary(language string) (*Dictionary, error) {
 	}
 
 	return r.Dictionary, nil
+}
+
+func (r *repository) DeleteDictionary() {
+	r.Dictionary = nil
 }
 
 func (r *repository) existsDictionaryOfLanguage(language string) bool {

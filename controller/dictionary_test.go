@@ -3,14 +3,15 @@ package controller
 import (
 	"bytes"
 	"errors"
-	"github.com/golang/mock/gomock"
-	"github.com/gorilla/mux"
-	"github.com/motnip/sermo/mocks/model"
-	"github.com/motnip/sermo/model"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
+
+	"github.com/golang/mock/gomock"
+	"github.com/gorilla/mux"
+	mock_model "github.com/motnip/sermo/mocks/model"
+	"github.com/motnip/sermo/model"
 )
 
 func TestCreateDictionary(t *testing.T) {
