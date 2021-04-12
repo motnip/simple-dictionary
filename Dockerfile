@@ -12,3 +12,14 @@ COPY go.sum .
 
 #This dowload all the project's dependencies
 RUN go mod download
+
+COPY . .
+
+RUN go build
+
+#RUN sermo
+
+EXPOSE 3000
+
+
+CMD [ "sermo" ]
