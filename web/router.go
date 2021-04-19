@@ -2,9 +2,10 @@ package web
 
 import (
 	"fmt"
-	"github.com/gorilla/mux"
 	"log"
 	"net/http"
+
+	"github.com/gorilla/mux"
 )
 
 type Router struct {
@@ -19,7 +20,7 @@ func NewRouter() *Router {
 
 func (r *Router) RouterStart() {
 	fmt.Println("Server started... ")
-	log.Fatal(http.ListenAndServe(":8080", r.router))
+	log.Fatal(http.ListenAndServe(":3000", r.router))
 }
 
 func (r *Router) InitRoute(routeMap *Route) {
