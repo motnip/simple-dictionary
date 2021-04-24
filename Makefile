@@ -40,3 +40,11 @@ build:
 run: build
 	@echo "  >  Running..."
 	@go run .
+
+docker-build:
+	@echo " > Building Docker image"
+	@docker docker build . -t montip/sermo
+
+docker-run:
+	@echo " > Runnin Docker image"
+	@docker run --name sermo -d -p 8080:3000 montip/sermo
