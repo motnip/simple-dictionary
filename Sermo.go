@@ -22,6 +22,7 @@ func main() {
 
 	router := web.NewRouter()
 	router.InitRoute(dictionaryController.GetCreateDictionaryRoute())
+	router.InitRoute(dictionaryController.GetListAllDictionary())
 	router.InitRoute(wordController.GetAddWordRoute())
 	router.InitRoute(wordController.GetListWordRoute())
 
