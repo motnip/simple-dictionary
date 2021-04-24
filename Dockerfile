@@ -9,13 +9,8 @@ WORKDIR /go/src/app/
 
 COPY . .
 
-COPY go.mod .
-COPY go.sum .
-
-RUN go install .
-
 #This dowload all the project's dependencies
-#RUN go mod download
+RUN go mod download
 
 #The run instruction executes when we build the image.
 #That means the command passed to run executes on top
