@@ -2,10 +2,11 @@ package controller
 
 import (
 	"encoding/json"
-	"github.com/motnip/sermo/model"
-	"github.com/motnip/sermo/web"
 	"io/ioutil"
 	"net/http"
+
+	"github.com/motnip/sermo/model"
+	"github.com/motnip/sermo/web"
 )
 
 type WordController interface {
@@ -86,6 +87,6 @@ func (w *wordcontroller) GetListWordRoute() *web.Route {
 		Path:     "/word",
 		Function: w.ListWords,
 		Method:   http.MethodGet,
-		Name:     "addWord",
+		Name:     "listWord",
 	}
 }
