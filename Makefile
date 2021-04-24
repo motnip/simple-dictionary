@@ -43,7 +43,7 @@ run: build
 
 docker-build:
 	@echo " > Building Docker image"
-	@docker docker build . -t montip/sermo
+	@docker build --build-arg BUILD_VERSION=0.1.0-aplha . -t montip/sermo
 
 docker-run:
 	@echo " > Runnin Docker image"

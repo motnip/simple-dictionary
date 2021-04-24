@@ -2,12 +2,17 @@ package main
 
 import (
 	"fmt"
+
 	"github.com/motnip/sermo/controller"
 	"github.com/motnip/sermo/model"
 	"github.com/motnip/sermo/web"
 )
 
+var BuildVersion = "development"
+
 func main() {
+
+	fmt.Println("Sermo version " + BuildVersion)
 
 	fmt.Println("Server starting... ")
 
