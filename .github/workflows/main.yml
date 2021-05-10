@@ -40,5 +40,5 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
           repository: tomaspinto/motnip
           tags:
-            type: sha
+            type=sha
           #tag_with_ref: true
