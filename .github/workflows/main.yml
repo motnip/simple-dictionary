@@ -28,9 +28,14 @@ jobs:
       - name: Build
         run: go build -v ./...
   test:
+      #This jobs depends on build jobs!
+      needs: build
       runs-on: ubuntu-latest
+      #TOMAS: I add this steps to checkout the code. But would be interesting
+      #to get the artifact from the previous job
       steps:
         # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+        #Yes we can, look at https://docs.github.com/en/actions/learn-github-actions/managing-complex-workflows
         - uses: actions/checkout@v2
         - name: Set up Go
           uses: actions/setup-go@v2
