@@ -1,6 +1,7 @@
 package model
 
 import (
+	"fmt"
 	"reflect"
 	"testing"
 )
@@ -32,6 +33,8 @@ func TestCreateDictionary_dictionaryAlreadyExists_Fail(t *testing.T) {
 
 	repo := NewRepository()
 
+	language := "en"
+	expectedErroMsg := fmt.Sprintf("dictionary %s already exists", language)
 	_, err := repo.CreateDictionary("en")
 	if err != nil {
 		t.Fatal(err)
@@ -39,11 +42,11 @@ func TestCreateDictionary_dictionaryAlreadyExists_Fail(t *testing.T) {
 
 	secondDictionaryResult, err := repo.CreateDictionary("en")
 	if err == nil {
-		t.Errorf("expected %v got %v", "dictionary already exists", secondDictionaryResult)
+		t.Errorf("expected %v got %v", expectedErroMsg, secondDictionaryResult)
 	}
 
-	if err.Error() != "dictionary already exists" {
-		t.Errorf("expected %v got %v", "dictionary already exists", secondDictionaryResult)
+	if err.Error() != expectedErroMsg {
+		t.Errorf("expected %v got %v", expectedErroMsg, secondDictionaryResult)
 	}
 }
 

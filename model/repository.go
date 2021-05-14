@@ -1,6 +1,13 @@
 package model
 
-import "errors"
+import (
+	"errors"
+	"fmt"
+
+	"github.com/motnip/sermo/system"
+)
+
+const NO_DICTIONARY = "no dictionary available"
 
 type Repository interface {
 	CreateDictionary(language string) (*Dictionary, error)
@@ -12,16 +19,22 @@ type Repository interface {
 
 type repository struct {
 	Dictionary *Dictionary
+	logger     *system.SermoLog
 }
 
 func NewRepository() Repository {
-	return &repository{}
+
+	return &repository{
+		logger: system.NewLog(),
+	}
 }
 
 func (r *repository) CreateDictionary(language string) (*Dictionary, error) {
 
 	if r.existsDictionaryOfLanguage(language) {
-		return nil, errors.New("dictionary already exists")
+		errorMsg := fmt.Sprintf("dictionary %s already exists", language)
+		r.logger.LogErr(errorMsg)
+		return nil, errors.New(errorMsg)
 	}
 
 	r.Dictionary = &Dictionary{
@@ -51,7 +64,8 @@ func (r *repository) ListDictionary() []*Dictionary {
 
 func (r *repository) AddWord(word *Word) error {
 	if !r.existsDictionary() {
-		return errors.New("no dictionary available")
+		r.logger.LogErr(NO_DICTIONARY)
+		return errors.New(NO_DICTIONARY)
 	}
 
 	r.Dictionary.Words = append(r.Dictionary.Words, word)
@@ -60,7 +74,8 @@ func (r *repository) AddWord(word *Word) error {
 
 func (r *repository) ListWords() ([]*Word, error) {
 	if !r.existsDictionary() {
-		return nil, errors.New("no dictionary available")
+		r.logger.LogErr(NO_DICTIONARY)
+		return nil, errors.New(NO_DICTIONARY)
 	}
 	return r.Dictionary.Words, nil
 }
