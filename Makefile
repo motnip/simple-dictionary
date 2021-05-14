@@ -45,6 +45,6 @@ docker-build:
 	@echo " > Building Docker image"
 	@docker build --build-arg BUILD_VERSION=0.1.0-aplha . -t montip/sermo
 
-docker-run:
+docker-run: docker-build
 	@echo " > Runnin Docker image"
 	@docker run --name sermo -d -p 8080:3000 montip/sermo
