@@ -2,10 +2,12 @@ package controller
 
 import (
 	"encoding/json"
-	"github.com/motnip/sermo/model"
-	"github.com/motnip/sermo/web"
 	"io/ioutil"
 	"net/http"
+
+	"github.com/motnip/sermo/model"
+	"github.com/motnip/sermo/system"
+	"github.com/motnip/sermo/web"
 )
 
 type DictionaryController interface {
@@ -17,11 +19,13 @@ type DictionaryController interface {
 
 type dictionarycontroller struct {
 	repository model.Repository
+	log        *system.SermoLog
 }
 
 func NewController(repository model.Repository) DictionaryController {
 	return &dictionarycontroller{
 		repository: repository,
+		log:        system.NewLog(),
 	}
 }
 
@@ -29,10 +33,12 @@ func (d *dictionarycontroller) CreateDictionary(httpResponse http.ResponseWriter
 	var input string
 	reqBody, err := ioutil.ReadAll(httpRequest.Body)
 	if err != nil {
+		d.log.LogErr(err.Error())
 		http.Error(httpResponse, err.Error(), http.StatusBadRequest)
 	}
 
 	if input = string(reqBody[:]); input == "" {
+		d.log.LogErr("Language cannot be empty string")
 		http.Error(httpResponse, "not valid language", http.StatusBadRequest)
 		return
 	}
@@ -40,6 +46,7 @@ func (d *dictionarycontroller) CreateDictionary(httpResponse http.ResponseWriter
 	_, err = d.repository.CreateDictionary(input)
 
 	if err != nil {
+		d.log.LogErr(err.Error())
 		http.Error(httpResponse, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -54,6 +61,7 @@ func (d *dictionarycontroller) ListAllDictionary(httpResponse http.ResponseWrite
 
 	output, err := json.Marshal(dictionaries)
 	if err != nil {
+		d.log.LogErr(err.Error())
 		http.Error(httpResponse, err.Error(), http.StatusInternalServerError)
 		return
 	}

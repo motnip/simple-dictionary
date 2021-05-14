@@ -9,7 +9,7 @@ type SermoLog struct {
 }
 
 func NewLog() *SermoLog {
-	initLogger := log.Default()
+	initLogger := log.Default() //available from 1.16 version
 	initLogger.SetFlags(log.Ldate | log.Lmicroseconds | log.Lshortfile)
 	initLogger.SetPrefix("ERROR - ")
 	return &SermoLog{
