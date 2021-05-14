@@ -1,25 +1,27 @@
 package web
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/motnip/sermo/system"
 )
 
 type Router struct {
 	router *mux.Router
+	log    *system.SermoLog
 }
 
 func NewRouter() *Router {
 	return &Router{
 		router: mux.NewRouter().StrictSlash(true),
+		log:    system.NewLog(),
 	}
 }
 
 func (r *Router) RouterStart() {
-	fmt.Println("Server started... ")
+	r.log.LogInfo("Server started... ")
 	log.Fatal(http.ListenAndServe(":3000", r.router))
 }
 

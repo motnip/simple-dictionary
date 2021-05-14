@@ -68,6 +68,7 @@ func (r *repository) AddWord(word *Word) error {
 		return errors.New(NO_DICTIONARY)
 	}
 
+	r.logger.LogInfo("Added new word " + word.Label)
 	r.Dictionary.Words = append(r.Dictionary.Words, word)
 	return nil
 }

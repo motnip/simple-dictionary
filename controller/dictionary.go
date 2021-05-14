@@ -2,6 +2,7 @@ package controller
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 
@@ -50,7 +51,7 @@ func (d *dictionarycontroller) CreateDictionary(httpResponse http.ResponseWriter
 		http.Error(httpResponse, err.Error(), http.StatusBadRequest)
 		return
 	}
-
+	d.log.LogInfo(fmt.Sprintf("Dicitionary for language %s created successfuly", input))
 	httpResponse.WriteHeader(http.StatusCreated)
 	httpResponse.Write([]byte(input))
 }
