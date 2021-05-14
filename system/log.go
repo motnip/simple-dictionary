@@ -1,7 +1,10 @@
 package system
 
 import (
+	"fmt"
 	"log"
+	"os"
+	"runtime"
 )
 
 type SermoLog struct {
@@ -12,33 +15,39 @@ type SermoLog struct {
 func NewLog() *SermoLog {
 
 	return &SermoLog{
-		logErr:  initError(),
 		logInfo: initInfo(),
+		logErr:  initError(),
 	}
 }
 
 func initDefaultLog() *log.Logger {
-	initLogger := log.Default() //available from 1.16 version
-	initLogger.SetFlags(log.Ldate | log.Lmicroseconds | log.Lshortfile)
+	initLogger := log.New(os.Stderr, "", log.Ldate|log.Lmicroseconds)
 	return initLogger
 }
 
 func initInfo() *log.Logger {
-	initLogger := initDefaultLog()
-	initLogger.SetPrefix("INFO - ")
-	return initLogger
+	newLogger := initDefaultLog()
+	newLogger.SetPrefix("INFO - ")
+	return newLogger
 }
 
 func initError() *log.Logger {
-	initLogger := initDefaultLog()
-	initLogger.SetPrefix("ERROR - ")
-	return initLogger
+	newLogger := initDefaultLog()
+	newLogger.SetPrefix("ERROR - ")
+	return newLogger
 }
 
 func (l *SermoLog) LogErr(message string) {
-	l.logErr.Print(message)
+	fileName, line := getCaller()
+	l.logErr.Print(fmt.Sprintf("[%s %d] - %s", fileName, line, message))
 }
 
 func (l *SermoLog) LogInfo(message string) {
-	l.logErr.Print(message)
+	fileName, line := getCaller()
+	l.logInfo.Print(fmt.Sprintf("[%s %d] - %s", fileName, line, message))
+}
+
+func getCaller() (string, int) {
+	pc, _, _, _ := runtime.Caller(2)
+	return runtime.FuncForPC(pc).FileLine(pc)
 }
