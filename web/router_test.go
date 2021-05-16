@@ -66,7 +66,6 @@ func TestRouter_requestWithWrongHeader_Failed(t *testing.T) {
 	//than
 	sut.InitRoute(newRoute)
 
-	//TOMAS we fake a call with wrong header and we expect to get a 401 or 405!
 	recorder := httptest.NewRecorder()
 	request, err := http.NewRequest(http.MethodGet, newRoute.Path, nil)
 	request.Header.Add("Content-type", "text/plain")
