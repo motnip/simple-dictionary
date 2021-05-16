@@ -39,10 +39,13 @@ func TestIntegration_Controller_AddNewWord_Succeed(t *testing.T) {
 	expectedWordsList := "[" + newWord + "]"
 
 	requestCreateDictionary, err := http.NewRequest(http.MethodPost, "/dictionary", bytes.NewBuffer([]byte(dictionaryLanguage)))
+	requestCreateDictionary.Header.Add("Content-type", "application/json")
+
 	if err != nil {
 		t.Fatal(err)
 	}
 	requestAddNewWord, err := http.NewRequest(http.MethodPost, "/word", bytes.NewBuffer([]byte(newWord)))
+	requestAddNewWord.Header.Add("Content-type", "application/json")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -72,7 +75,6 @@ func TestIntegration_Controller_AddNewWord_Succeed(t *testing.T) {
 	if responseBody != newWord {
 		t.Errorf("Router returned unexpected body: got %v want %v", responseBody, newWord)
 	}
-
 	if status := recorderListWord.Code; status != http.StatusOK {
 		t.Errorf("Router returned wrong status code: got %v want %v", status, http.StatusOK)
 	}
@@ -95,6 +97,7 @@ func TestIntegration_Controller_CreateDictionary_Succeed(t *testing.T) {
 	dictionaryLanguage := "en"
 
 	requestCreateDictionary, err := http.NewRequest(http.MethodPost, "/dictionary", bytes.NewBuffer([]byte(dictionaryLanguage)))
+	requestCreateDictionary.Header.Add("Content-type", "application/json")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -139,6 +142,7 @@ func TestIntegration_Controller_NoDictionaryExists_Failed(t *testing.T) {
 	expectedErrorMessage := "no dictionary available\n"
 
 	requestAddNewWord, err := http.NewRequest(http.MethodPost, "/word", bytes.NewBuffer([]byte(newWord)))
+	requestAddNewWord.Header.Add("Content-type", "application/json")
 	if err != nil {
 		t.Fatal(err)
 	}

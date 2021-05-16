@@ -71,11 +71,14 @@ func (d *dictionarycontroller) ListAllDictionary(httpResponse http.ResponseWrite
 }
 
 func (d *dictionarycontroller) GetCreateDictionaryRoute() *web.Route {
+	headers := make(map[string]string)
+	headers["Content-type"] = "application/json"
 	return &web.Route{
 		Path:     "/dictionary",
 		Function: d.CreateDictionary,
 		Method:   http.MethodPost,
 		Name:     "createDictionary",
+		Headers:  &headers,
 	}
 }
 

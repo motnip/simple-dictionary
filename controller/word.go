@@ -83,11 +83,14 @@ func (w *wordcontroller) ListWords(httpResponse http.ResponseWriter, httpRequest
 }
 
 func (w *wordcontroller) GetAddWordRoute() *web.Route {
+	headers := make(map[string]string)
+	headers["Content-type"] = "application/json"
 	return &web.Route{
 		Path:     "/word",
 		Function: w.AddWord,
 		Method:   http.MethodPost,
 		Name:     "addWord",
+		Headers:  &headers,
 	}
 }
 
