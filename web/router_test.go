@@ -1,11 +1,13 @@
 package web
 
 import (
+	"net/http"
+	"net/http/httptest"
+	"testing"
+
 	"github.com/golang/mock/gomock"
 	"github.com/gorilla/mux"
 	mock_controller "github.com/motnip/sermo/mocks/controller"
-	"net/http"
-	"testing"
 )
 
 func TestRouter_InitRoute(t *testing.T) {
@@ -40,5 +42,43 @@ func TestRouter_InitRoute(t *testing.T) {
 
 	if sut.router.GetRoute("fooGet").GetHandler() == nil {
 		t.Errorf("No path returend: got %v want %v", nil, "not nil")
+	}
+}
+
+func TestRouter_requestWithWrongHeader_Failed(t *testing.T) {
+
+	//given
+	var headers = make(map[string]string)
+	headers["Content-type"] = "application/json"
+	newRoute := &Route{
+		Path: "/foo",
+		Function: func(rw http.ResponseWriter, r *http.Request) {
+			rw.WriteHeader(http.StatusOK)
+		},
+		Method:  http.MethodGet,
+		Name:    "fooGet",
+		Headers: &headers,
+	}
+
+	//when
+	sut := NewRouter()
+
+	//than
+	sut.InitRoute(newRoute)
+
+	//TOMAS we fake a call with wrong header and we expect to get a 401 or 405!
+	recorder := httptest.NewRecorder()
+	request, err := http.NewRequest(http.MethodGet, newRoute.Path, nil)
+	request.Header.Add("Content-type", "text/plain")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	//when
+	sut.router.ServeHTTP(recorder, request)
+
+	//then
+	if status := recorder.Code; status != http.StatusNotFound {
+		t.Errorf("Router returned wrong status code: got %v want %v", status, http.StatusNotFound)
 	}
 }

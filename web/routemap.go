@@ -7,6 +7,7 @@ type Route struct {
 	Function func(http.ResponseWriter, *http.Request)
 	Method   string
 	Name     string
+	Headers  *map[string]string
 }
 
 /*

@@ -26,7 +26,12 @@ func (r *Router) RouterStart() {
 }
 
 func (r *Router) InitRoute(routeMap *Route) {
-	r.router.HandleFunc(routeMap.Path, routeMap.Function).Name(routeMap.Name).Methods(routeMap.Method)
+	route := r.router.HandleFunc(routeMap.Path, routeMap.Function)
+	route.Name(routeMap.Name)
+	route.Methods(routeMap.Method)
+	if routeMap.Headers != nil && len(*routeMap.Headers) > 0 {
+		route.Headers("Content-type", "application/json")
+	}
 }
 
 func (r *Router) Router() *mux.Router {
