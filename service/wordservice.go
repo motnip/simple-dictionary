@@ -11,6 +11,10 @@ type wordService struct {
 	log        *system.SermoLog
 }
 
+type WordService interface {
+	SaveWord(w *model.Word) error
+}
+
 func NewWordService(repository model.Repository, validator model.Validator) wordService {
 	return wordService{
 		repository: repository,
