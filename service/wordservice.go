@@ -32,6 +32,7 @@ func (s *wordService) SaveWord(w *model.Word) error {
 		s.log.LogErr(model.NO_DICTIONARY)
 		return errors.New(model.NO_DICTIONARY)
 	}
+
 	return s.repository.AddWord(w)
 }
 

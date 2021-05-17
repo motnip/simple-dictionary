@@ -32,7 +32,7 @@ func NewRepository() Repository {
 
 func (r *repository) CreateDictionary(language string) (*Dictionary, error) {
 
-	if r.existsDictionaryOfLanguage(language) {
+	if r.ExistsDictionary() {
 		errorMsg := fmt.Sprintf("dictionary %s already exists", language)
 		r.logger.LogErr(errorMsg)
 		return nil, errors.New(errorMsg)
@@ -49,10 +49,12 @@ func (r *repository) DeleteDictionary() {
 	r.Dictionary = nil
 }
 
-func (r *repository) existsDictionaryOfLanguage(language string) bool {
+//TODO at the moment a user can have only one dictionary
+// This function will be enabled when the feature of multiple dictionary will be available
+/*func (r *repository) existsDictionaryOfLanguage(language string) bool {
 
 	return r.ExistsDictionary() && r.Dictionary.Language == language
-}
+}*/
 
 func (r *repository) ExistsDictionary() bool {
 	return r.Dictionary != nil
