@@ -12,6 +12,7 @@ type wordService struct {
 
 type WordService interface {
 	SaveWord(w *model.Word) error
+	ListWords() ([]*model.Word, error)
 }
 
 func NewWordService(repository model.Repository) wordService {
@@ -26,4 +27,8 @@ func (s *wordService) SaveWord(w *model.Word) error {
 		return err
 	}
 	return s.repository.AddWord(w)
+}
+
+func (s *wordService) ListWords() ([]*model.Word, error) {
+	return s.repository.ListWords()
 }
