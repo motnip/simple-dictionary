@@ -34,6 +34,21 @@ func (m *MockWordService) EXPECT() *MockWordServiceMockRecorder {
 	return m.recorder
 }
 
+// ListWords mocks base method.
+func (m *MockWordService) ListWords() ([]*model.Word, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListWords")
+	ret0, _ := ret[0].([]*model.Word)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListWords indicates an expected call of ListWords.
+func (mr *MockWordServiceMockRecorder) ListWords() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListWords", reflect.TypeOf((*MockWordService)(nil).ListWords))
+}
+
 // SaveWord mocks base method.
 func (m *MockWordService) SaveWord(arg0 *model.Word) error {
 	m.ctrl.T.Helper()

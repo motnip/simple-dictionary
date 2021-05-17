@@ -15,8 +15,8 @@ type WordService interface {
 	ListWords() ([]*model.Word, error)
 }
 
-func NewWordService(repository model.Repository) wordService {
-	return wordService{
+func NewWordService(repository model.Repository) WordService {
+	return &wordService{
 		repository: repository,
 		log:        system.NewLog(),
 	}
