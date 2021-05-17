@@ -2,6 +2,7 @@ package controller
 
 import (
 	"encoding/json"
+	"github.com/motnip/sermo/service"
 	"io/ioutil"
 	"net/http"
 
@@ -18,14 +19,14 @@ type WordController interface {
 }
 
 type wordcontroller struct {
-	repository model.Repository
-	log        *system.SermoLog
+	wordService service.WordService
+	log         *system.SermoLog
 }
 
-func NewWordController(repository model.Repository) WordController {
+func NewWordController(wordService service.WordService) WordController {
 	return &wordcontroller{
-		repository: repository,
-		log:        system.NewLog(),
+		wordService: wordService,
+		log:         system.NewLog(),
 	}
 }
 
@@ -45,7 +46,7 @@ func (w *wordcontroller) AddWord(httpResponse http.ResponseWriter, httpRequest *
 		return
 	}
 
-	err = w.repository.AddWord(&newWordDto)
+	err = w.wordService.SaveWord(&newWordDto)
 	if err != nil {
 		w.log.LogErr(err.Error())
 		http.Error(httpResponse, err.Error(), http.StatusBadRequest)
@@ -66,7 +67,7 @@ func (w *wordcontroller) AddWord(httpResponse http.ResponseWriter, httpRequest *
 
 func (w *wordcontroller) ListWords(httpResponse http.ResponseWriter, httpRequest *http.Request) {
 
-	words, err := w.repository.ListWords()
+	words, err := w.wordService.ListWords()
 	if err != nil {
 		w.log.LogErr(err.Error())
 		http.Error(httpResponse, err.Error(), http.StatusBadRequest)

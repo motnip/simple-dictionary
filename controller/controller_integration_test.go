@@ -2,6 +2,7 @@ package controller
 
 import (
 	"bytes"
+	"github.com/motnip/sermo/service"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -14,6 +15,7 @@ import (
 
 var router *mux.Router
 var repository model.Repository
+var wordService service.WordService
 var dictionaryController DictionaryController
 var wordController WordController
 
@@ -180,8 +182,9 @@ func TestIntegration_Controller_NoDictionaryExists_Failed(t *testing.T) {
 
 func setUp() {
 	repository = model.NewRepository()
+	wordService = service.NewWordService(repository)
 	dictionaryController = NewController(repository)
-	wordController = NewWordController(repository)
+	wordController = NewWordController(wordService)
 
 	newRouter := web.NewRouter()
 	newRouter.InitRoute(dictionaryController.GetCreateDictionaryRoute())

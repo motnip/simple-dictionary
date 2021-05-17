@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/motnip/sermo/service"
 
 	"github.com/motnip/sermo/controller"
 	"github.com/motnip/sermo/model"
@@ -17,8 +18,9 @@ func main() {
 	fmt.Println("Server starting... ")
 
 	repository := model.NewRepository()
+	wordService := service.NewWordService(repository)
 	dictionaryController := controller.NewController(repository)
-	wordController := controller.NewWordController(repository)
+	wordController := controller.NewWordController(wordService)
 
 	router := web.NewRouter()
 	router.InitRoute(dictionaryController.GetCreateDictionaryRoute())

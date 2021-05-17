@@ -5,7 +5,7 @@ import (
 	"errors"
 	"github.com/golang/mock/gomock"
 	"github.com/gorilla/mux"
-	mock_model "github.com/motnip/sermo/mocks/model"
+	mock_service "github.com/motnip/sermo/mocks/service"
 	"github.com/motnip/sermo/model"
 	"net/http"
 	"net/http/httptest"
@@ -19,8 +19,8 @@ func TestAddWord(t *testing.T) {
 	returnedWord := "{\"Label\":\"hello\",\"Meaning\":\"ciao\",\"Sentence\":\"\"}"
 
 	controller := gomock.NewController(t)
-	repositoryMock := mock_model.NewMockRepository(controller)
-	sut := NewWordController(repositoryMock)
+	serviceMock := mock_service.NewMockWordService(controller)
+	sut := NewWordController(serviceMock)
 	router := mux.NewRouter().StrictSlash(true)
 	router.HandleFunc(sut.GetAddWordRoute().Path, sut.GetAddWordRoute().Function).Methods(sut.GetAddWordRoute().Method)
 
@@ -33,7 +33,7 @@ func TestAddWord(t *testing.T) {
 	recorder := httptest.NewRecorder()
 
 	//when
-	repositoryMock.EXPECT().AddWord(gomock.Any()).Times(1)
+	serviceMock.EXPECT().SaveWord(gomock.Any()).Times(1)
 	router.ServeHTTP(recorder, request)
 
 	//then
@@ -54,8 +54,8 @@ func TestAddWord_noDictionary_Failed(t *testing.T) {
 	expectedError := errors.New("no dictionary available")
 
 	controller := gomock.NewController(t)
-	repositoryMock := mock_model.NewMockRepository(controller)
-	sut := NewWordController(repositoryMock)
+	serviceMock := mock_service.NewMockWordService(controller)
+	sut := NewWordController(serviceMock)
 	router := mux.NewRouter().StrictSlash(true)
 	router.HandleFunc(sut.GetAddWordRoute().Path, sut.GetAddWordRoute().Function).Methods(sut.GetAddWordRoute().Method)
 
@@ -68,7 +68,7 @@ func TestAddWord_noDictionary_Failed(t *testing.T) {
 	recorder := httptest.NewRecorder()
 
 	//when
-	repositoryMock.EXPECT().AddWord(gomock.Any()).Return(expectedError)
+	serviceMock.EXPECT().SaveWord(gomock.Any()).Times(1).Return(expectedError)
 	router.ServeHTTP(recorder, request)
 
 	//then
@@ -89,8 +89,8 @@ func TestAddWord_jsonMalformed_Failed(t *testing.T) {
 	expectedErrorMessage := "body request malformed"
 
 	controller := gomock.NewController(t)
-	repositoryMock := mock_model.NewMockRepository(controller)
-	sut := NewWordController(repositoryMock)
+	serviceMock := mock_service.NewMockWordService(controller)
+	sut := NewWordController(serviceMock)
 	router := mux.NewRouter().StrictSlash(true)
 	router.HandleFunc(sut.GetAddWordRoute().Path, sut.GetAddWordRoute().Function).Methods(sut.GetAddWordRoute().Method)
 
@@ -103,7 +103,7 @@ func TestAddWord_jsonMalformed_Failed(t *testing.T) {
 	recorder := httptest.NewRecorder()
 
 	//when
-	repositoryMock.EXPECT().AddWord(gomock.Any()).Times(0)
+	serviceMock.EXPECT().SaveWord(gomock.Any()).Times(0)
 	router.ServeHTTP(recorder, request)
 
 	//then
@@ -133,8 +133,8 @@ func TestListWords(t *testing.T) {
 	expectedWordsList := "[{\"Label\":\"foo\",\"Meaning\":\"foo\",\"Sentence\":\"\"},{\"Label\":\"bar\",\"Meaning\":\"bar\",\"Sentence\":\"\"}]"
 
 	controller := gomock.NewController(t)
-	repositoryMock := mock_model.NewMockRepository(controller)
-	sut := NewWordController(repositoryMock)
+	serviceMock := mock_service.NewMockWordService(controller)
+	sut := NewWordController(serviceMock)
 	router := mux.NewRouter().StrictSlash(true)
 	router.HandleFunc(sut.GetListWordRoute().Path, sut.GetListWordRoute().Function).Methods(sut.GetListWordRoute().Method)
 
@@ -146,7 +146,7 @@ func TestListWords(t *testing.T) {
 	recorder := httptest.NewRecorder()
 
 	//when
-	repositoryMock.EXPECT().ListWords().Return(words, nil)
+	serviceMock.EXPECT().ListWords().Times(1).Return(words, nil)
 	router.ServeHTTP(recorder, request)
 
 	//then
@@ -166,8 +166,8 @@ func TestListWords_noAvailableDictionary_returnBadRequest(t *testing.T) {
 	expectedError := errors.New("no dictionary available")
 
 	controller := gomock.NewController(t)
-	repositoryMock := mock_model.NewMockRepository(controller)
-	sut := NewWordController(repositoryMock)
+	serviceMock := mock_service.NewMockWordService(controller)
+	sut := NewWordController(serviceMock)
 	router := mux.NewRouter().StrictSlash(true)
 	router.HandleFunc(sut.GetListWordRoute().Path, sut.GetListWordRoute().Function).Methods(sut.GetListWordRoute().Method)
 
@@ -179,7 +179,7 @@ func TestListWords_noAvailableDictionary_returnBadRequest(t *testing.T) {
 	recorder := httptest.NewRecorder()
 
 	//when
-	repositoryMock.EXPECT().ListWords().Return(nil, expectedError)
+	serviceMock.EXPECT().ListWords().Times(1).Return(nil, expectedError)
 	router.ServeHTTP(recorder, request)
 
 	//then
