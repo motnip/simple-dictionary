@@ -12,11 +12,7 @@ type Word struct {
 	Sentence string
 }
 
-type Validator interface {
-	Validate(w Word) (bool, error)
-}
-
-func Validate(w Word) (bool, error) {
+func (w *Word) Validate() (bool, error) {
 
 	if val, err := validateString(w.Label, "label"); val == false && err != nil {
 		return val, err

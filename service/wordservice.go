@@ -7,7 +7,6 @@ import (
 
 type wordService struct {
 	repository model.Repository
-	validator  model.Validator
 	log        *system.SermoLog
 }
 
@@ -15,16 +14,15 @@ type WordService interface {
 	SaveWord(w *model.Word) error
 }
 
-func NewWordService(repository model.Repository, validator model.Validator) wordService {
+func NewWordService(repository model.Repository) wordService {
 	return wordService{
 		repository: repository,
-		validator:  validator,
 		log:        system.NewLog(),
 	}
 }
 
 func (s *wordService) SaveWord(w *model.Word) error {
-	if val, err := s.validator.Validate(*w); val == false && err != nil {
+	if val, err := w.Validate(); val == false && err != nil {
 		return err
 	}
 	return s.repository.AddWord(w)
