@@ -14,7 +14,7 @@ func TestValidate_missingLabelField_ReturnError(t *testing.T) {
 		Sentence: "sentence",
 	}
 
-	result, err := validate(word)
+	result, err := Validate(word)
 
 	if result != false {
 		t.Errorf("Router returned unexpected value: got %v want %v", result, "true")
@@ -33,7 +33,7 @@ func TestValidate_missingMeaningField_ReturnError(t *testing.T) {
 		Sentence: "sentence",
 	}
 
-	result, err := validate(word)
+	result, err := Validate(word)
 
 	if result != false {
 		t.Errorf("Router returned unexpected value: got %v want %v", result, "true")
