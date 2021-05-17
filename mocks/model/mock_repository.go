@@ -75,6 +75,20 @@ func (mr *MockRepositoryMockRecorder) DeleteDictionary() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteDictionary", reflect.TypeOf((*MockRepository)(nil).DeleteDictionary))
 }
 
+// ExistsDictionary mocks base method.
+func (m *MockRepository) ExistsDictionary() bool {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ExistsDictionary")
+	ret0, _ := ret[0].(bool)
+	return ret0
+}
+
+// ExistsDictionary indicates an expected call of ExistsDictionary.
+func (mr *MockRepositoryMockRecorder) ExistsDictionary() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ExistsDictionary", reflect.TypeOf((*MockRepository)(nil).ExistsDictionary))
+}
+
 // ListDictionary mocks base method.
 func (m *MockRepository) ListDictionary() []*model.Dictionary {
 	m.ctrl.T.Helper()

@@ -15,6 +15,7 @@ type Repository interface {
 	AddWord(word *Word) error
 	ListWords() ([]*Word, error)
 	ListDictionary() []*Dictionary
+	ExistsDictionary() bool
 }
 
 type repository struct {
@@ -50,10 +51,10 @@ func (r *repository) DeleteDictionary() {
 
 func (r *repository) existsDictionaryOfLanguage(language string) bool {
 
-	return r.existsDictionary() && r.Dictionary.Language == language
+	return r.ExistsDictionary() && r.Dictionary.Language == language
 }
 
-func (r *repository) existsDictionary() bool {
+func (r *repository) ExistsDictionary() bool {
 	return r.Dictionary != nil
 }
 
@@ -63,20 +64,11 @@ func (r *repository) ListDictionary() []*Dictionary {
 }
 
 func (r *repository) AddWord(word *Word) error {
-	if !r.existsDictionary() {
-		r.logger.LogErr(NO_DICTIONARY)
-		return errors.New(NO_DICTIONARY)
-	}
-
 	r.logger.LogInfo("Added new word " + word.Label)
 	r.Dictionary.Words = append(r.Dictionary.Words, word)
 	return nil
 }
 
 func (r *repository) ListWords() ([]*Word, error) {
-	if !r.existsDictionary() {
-		r.logger.LogErr(NO_DICTIONARY)
-		return nil, errors.New(NO_DICTIONARY)
-	}
 	return r.Dictionary.Words, nil
 }

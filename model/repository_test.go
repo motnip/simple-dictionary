@@ -75,13 +75,26 @@ func TestAddWord(t *testing.T) {
 	}
 }
 
-func TestAddWord_noDictionaryExists_Failed(t *testing.T) {
+func TestExistsDictionary_Succeed(t *testing.T) {
 
 	repo := NewRepository()
-	err := repo.AddWord(&newWord)
+	repo.CreateDictionary("en")
 
-	if err == nil {
-		t.Errorf("expected %v go %v", "no dictionary available", err)
+	result := repo.ExistsDictionary()
+
+	if result != true {
+		t.Errorf("expected ExistsDictionary return %v got %v", true, result)
+
+	}
+}
+
+func TestExistsDictionary_noDictionaryAvailable_Failed(t *testing.T) {
+
+	repo := NewRepository()
+	result := repo.ExistsDictionary()
+
+	if result != false {
+		t.Errorf("expected ExistsDictionary return %v got %v", false, result)
 
 	}
 }
@@ -117,22 +130,5 @@ func TestListWord(t *testing.T) {
 	}
 	if result[0].Sentence != newWord.Sentence {
 		t.Errorf("expected %s, got %s ", newWord.Sentence, result[0].Sentence)
-	}
-}
-
-func TestListWord_noDictionaryExists_Failed(t *testing.T) {
-
-	repo := NewRepository()
-
-	result, err := repo.ListWords()
-
-	if err == nil {
-		t.Errorf("expected %v got %v", "no dictionary available", err)
-
-	}
-
-	if result != nil {
-		t.Errorf("expected %v got %v", nil, result)
-
 	}
 }
