@@ -13,6 +13,14 @@ type Router struct {
 	log    *system.SermoLog
 }
 
+type Route struct {
+	Path     string
+	Function func(http.ResponseWriter, *http.Request)
+	Method   string
+	Name     string
+	Headers  *map[string]string
+}
+
 func NewRouter() *Router {
 	return &Router{
 		router: mux.NewRouter().StrictSlash(true),
