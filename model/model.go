@@ -17,11 +17,11 @@ type Word struct {
 
 func (w *Word) Validate() (bool, error) {
 
-	if val, err := validateString(w.Label, "label"); val == false && err != nil {
+	if val, err := validateString(w.Label, "Label"); val == false && err != nil {
 		return val, err
 	}
 
-	if val, err := validateString(w.Meaning, "meaning"); val == false && err != nil {
+	if val, err := validateString(w.Meaning, "Meaning"); val == false && err != nil {
 		return val, err
 	}
 

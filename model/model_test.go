@@ -7,7 +7,7 @@ import (
 
 func TestValidate_missingLabelField_ReturnError(t *testing.T) {
 
-	expectedError := fmt.Sprintf(MANDATORY_FIELD, "label")
+	expectedError := fmt.Sprintf(MANDATORY_FIELD, "Label")
 	word := Word{
 		Label:    "",
 		Meaning:  "meaning",
@@ -26,7 +26,7 @@ func TestValidate_missingLabelField_ReturnError(t *testing.T) {
 
 func TestValidate_missingMeaningField_ReturnError(t *testing.T) {
 
-	expectedError := fmt.Sprintf(MANDATORY_FIELD, "meaning")
+	expectedError := fmt.Sprintf(MANDATORY_FIELD, "Meaning")
 	word := Word{
 		Label:    "lable",
 		Meaning:  "",
