@@ -2,12 +2,13 @@ package model
 
 import (
 	"fmt"
+	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
 func TestValidate_missingLabelField_ReturnError(t *testing.T) {
 
-	expectedError := fmt.Sprintf(MANDATORY_FIELD, "Label")
+	expectedError := fmt.Errorf(MANDATORY_FIELD, "Label")
 	word := Word{
 		Label:    "",
 		Meaning:  "meaning",
@@ -16,17 +17,14 @@ func TestValidate_missingLabelField_ReturnError(t *testing.T) {
 
 	result, err := word.Validate()
 
-	if result != false {
-		t.Errorf("Router returned unexpected value: got %v want %v", result, "true")
-	}
-	if err.Error() != expectedError {
-		t.Errorf("Router returned unexpected value: got %v want %v", err.Error(), expectedError)
-	}
+	assert.False(t, result, "Router returned unexpected value: got %v want %v", result, "true")
+
+	assert.EqualError(t, expectedError, err.Error(), "Router returned unexpected value: got %v want %v", err.Error(), expectedError)
 }
 
 func TestValidate_missingMeaningField_ReturnError(t *testing.T) {
 
-	expectedError := fmt.Sprintf(MANDATORY_FIELD, "Meaning")
+	expectedError := fmt.Errorf(MANDATORY_FIELD, "Meaning")
 	word := Word{
 		Label:    "lable",
 		Meaning:  "",
@@ -35,10 +33,7 @@ func TestValidate_missingMeaningField_ReturnError(t *testing.T) {
 
 	result, err := word.Validate()
 
-	if result != false {
-		t.Errorf("Router returned unexpected value: got %v want %v", result, "true")
-	}
-	if err.Error() != expectedError {
-		t.Errorf("Router returned unexpected value: got %v want %v", err.Error(), expectedError)
-	}
+	assert.False(t, result, "Router returned unexpected value: got %v want %v", result, "true")
+
+	assert.EqualError(t, expectedError, err.Error(), "Router returned unexpected value: got %v want %v", err.Error(), expectedError)
 }

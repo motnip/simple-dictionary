@@ -2,7 +2,7 @@ package model
 
 import (
 	"fmt"
-	"reflect"
+	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
@@ -20,13 +20,9 @@ func TestCreateDictionary(t *testing.T) {
 	}
 
 	result, err := repo.CreateDictionary("en")
-	if err != nil {
-		t.Fatal(err)
-	}
 
-	if !reflect.DeepEqual(result, dictionary) {
-		t.Errorf("expected %v got %v", dictionary, result)
-	}
+	assert.NoError(t, err)
+	assert.Equal(t, dictionary, result, "expected %v got %v", dictionary, result)
 }
 
 func TestCreateDictionary_dictionaryAlreadyExists_Fail(t *testing.T) {
@@ -34,20 +30,14 @@ func TestCreateDictionary_dictionaryAlreadyExists_Fail(t *testing.T) {
 	repo := NewRepository()
 
 	language := "en"
-	expectedErroMsg := fmt.Sprintf("dictionary %s already exists", language)
+	expectedErroMsg := fmt.Errorf("dictionary %s already exists", language)
 	_, err := repo.CreateDictionary("en")
-	if err != nil {
-		t.Fatal(err)
-	}
+	assert.NoError(t, err)
 
 	secondDictionaryResult, err := repo.CreateDictionary("en")
-	if err == nil {
-		t.Errorf("expected %v got %v", expectedErroMsg, secondDictionaryResult)
-	}
+	assert.Error(t, err, "expected %v got %v", expectedErroMsg, secondDictionaryResult)
+	assert.EqualError(t, expectedErroMsg, err.Error(), "expected %v got %v", expectedErroMsg, secondDictionaryResult)
 
-	if err.Error() != expectedErroMsg {
-		t.Errorf("expected %v got %v", expectedErroMsg, secondDictionaryResult)
-	}
 }
 
 func TestListDictionary(t *testing.T) {
@@ -58,9 +48,7 @@ func TestListDictionary(t *testing.T) {
 
 	result := repo.ListDictionary()
 
-	if len(result) != 1 {
-		t.Errorf("expected %v got %v", 1, len(result))
-	}
+	assert.Equal(t, 1, len(result))
 }
 
 func TestAddWord(t *testing.T) {
@@ -69,10 +57,7 @@ func TestAddWord(t *testing.T) {
 	repo.CreateDictionary("en")
 	err := repo.AddWord(&newWord)
 
-	if err != nil {
-		t.Errorf("expected %v go %v", nil, err)
-
-	}
+	assert.NoError(t, err)
 }
 
 func TestExistsDictionary_Succeed(t *testing.T) {
@@ -82,10 +67,7 @@ func TestExistsDictionary_Succeed(t *testing.T) {
 
 	result := repo.ExistsDictionary()
 
-	if result != true {
-		t.Errorf("expected ExistsDictionary return %v got %v", true, result)
-
-	}
+	assert.True(t, result)
 }
 
 func TestExistsDictionary_noDictionaryAvailable_Failed(t *testing.T) {
@@ -93,10 +75,7 @@ func TestExistsDictionary_noDictionaryAvailable_Failed(t *testing.T) {
 	repo := NewRepository()
 	result := repo.ExistsDictionary()
 
-	if result != false {
-		t.Errorf("expected ExistsDictionary return %v got %v", false, result)
-
-	}
+	assert.False(t, result)
 }
 
 func TestListWord(t *testing.T) {
@@ -112,23 +91,12 @@ func TestListWord(t *testing.T) {
 	}
 
 	err := repo.AddWord(&newWord)
-	if err != nil {
-		t.Errorf("Error not expected %v", err)
-	}
+	assert.NoError(t, err)
 
 	result, _ := repo.ListWords()
 
-	if len(result) < 1 {
-		t.Error("no list of words have been returned", result)
-	}
-
-	if result[0].Label != newWord.Label {
-		t.Errorf("expected %s, got %s ", newWord.Label, result[0].Label)
-	}
-	if result[0].Meaning != newWord.Meaning {
-		t.Errorf("expected %s, got %s ", newWord.Meaning, result[0].Meaning)
-	}
-	if result[0].Sentence != newWord.Sentence {
-		t.Errorf("expected %s, got %s ", newWord.Sentence, result[0].Sentence)
-	}
+	assert.GreaterOrEqualf(t, 1, len(result), "no list of words have been returned", result)
+	assert.Equal(t, newWord.Label, result[0].Label)
+	assert.Equal(t, newWord.Meaning, result[0].Meaning)
+	assert.Equal(t, newWord.Sentence, result[0].Sentence)
 }
