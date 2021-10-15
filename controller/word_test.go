@@ -7,118 +7,92 @@ import (
 	"github.com/gorilla/mux"
 	mock_service "github.com/motnip/sermo/mocks/service"
 	"github.com/motnip/sermo/model"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/suite"
 	"net/http"
 	"net/http/httptest"
-	"strings"
 	"testing"
 )
 
-func TestAddWord(t *testing.T) {
+type WordTestSuite struct {
+	suite.Suite
+	controller  *gomock.Controller
+	serviceMock *mock_service.MockWordService
+	router      *mux.Router
+	sut         WordController
+}
+
+func TestWordTestSuite(t *testing.T) {
+	suite.Run(t, new(WordTestSuite))
+}
+
+func (w *WordTestSuite) SetupTest() {
+	w.controller = gomock.NewController(w.T())
+	w.serviceMock = mock_service.NewMockWordService(w.controller)
+	w.sut = NewWordController(w.serviceMock)
+	w.router = mux.NewRouter().StrictSlash(true)
+	w.router.HandleFunc(w.sut.GetAddWordRoute().Path, w.sut.GetAddWordRoute().Function).Methods(w.sut.GetAddWordRoute().Method)
+	w.router.HandleFunc(w.sut.GetListWordRoute().Path, w.sut.GetListWordRoute().Function).Methods(w.sut.GetListWordRoute().Method)
+}
+
+func (w *WordTestSuite) TestAddWord() {
 	//given
 	newWord := "{\"Label\":\"hello\",\"Meaning\":\"ciao\",\"Sentence\":\"\"}"
 	returnedWord := "{\"Label\":\"hello\",\"Meaning\":\"ciao\",\"Sentence\":\"\"}"
 
-	controller := gomock.NewController(t)
-	serviceMock := mock_service.NewMockWordService(controller)
-	sut := NewWordController(serviceMock)
-	router := mux.NewRouter().StrictSlash(true)
-	router.HandleFunc(sut.GetAddWordRoute().Path, sut.GetAddWordRoute().Function).Methods(sut.GetAddWordRoute().Method)
-
 	request, err := http.NewRequest(http.MethodPost, "/word", bytes.NewBuffer([]byte(newWord)))
-
-	if err != nil {
-		t.Fatal(err)
-	}
+	w.Require().NoError(err)
 
 	recorder := httptest.NewRecorder()
 
 	//when
-	serviceMock.EXPECT().SaveWord(gomock.Any()).Times(1)
-	router.ServeHTTP(recorder, request)
+	w.serviceMock.EXPECT().SaveWord(gomock.Any()).Times(1)
+	w.router.ServeHTTP(recorder, request)
 
 	//then
-	if status := recorder.Code; status != http.StatusCreated {
-		t.Errorf("Router returned wrong status code: got %v want %v", status, http.StatusCreated)
-	}
-
-	responseBody := recorder.Body.String()
-	if responseBody != returnedWord {
-		t.Errorf("Router returned unexpected body: got %v want %v", responseBody, returnedWord)
-	}
-
+	assert.Equal(w.T(), recorder.Code, http.StatusCreated)
+	assert.Equal(w.T(), returnedWord, recorder.Body.String())
 }
 
-func TestAddWord_noDictionary_Failed(t *testing.T) {
+func (w *WordTestSuite) TestAddWord_noDictionary_Failed() {
 	//given
 	newWord := "{\"Label\":\"hello\",\"Meaning\":\"ciao\",\"Sentence\":\"\"}"
 	expectedError := errors.New("no dictionary available")
 
-	controller := gomock.NewController(t)
-	serviceMock := mock_service.NewMockWordService(controller)
-	sut := NewWordController(serviceMock)
-	router := mux.NewRouter().StrictSlash(true)
-	router.HandleFunc(sut.GetAddWordRoute().Path, sut.GetAddWordRoute().Function).Methods(sut.GetAddWordRoute().Method)
-
 	request, err := http.NewRequest(http.MethodPost, "/word", bytes.NewBuffer([]byte(newWord)))
-
-	if err != nil {
-		t.Fatal(err)
-	}
+	w.Require().NoError(err)
 
 	recorder := httptest.NewRecorder()
 
 	//when
-	serviceMock.EXPECT().SaveWord(gomock.Any()).Times(1).Return(expectedError)
-	router.ServeHTTP(recorder, request)
+	w.serviceMock.EXPECT().SaveWord(gomock.Any()).Times(1).Return(expectedError)
+	w.router.ServeHTTP(recorder, request)
 
 	//then
-	if status := recorder.Code; status != http.StatusBadRequest {
-		t.Errorf("Router returned wrong status code: got %v want %v", status, http.StatusBadRequest)
-	}
-
-	responseBody := recorder.Body.String()
-	if !strings.Contains(responseBody, expectedError.Error()) {
-		t.Errorf("Router returned unexpected body: got %v want %v", responseBody, expectedError)
-	}
-
+	assert.Equal(w.T(), recorder.Code, http.StatusBadRequest)
+	assert.Contains(w.T(), recorder.Body.String(), expectedError.Error())
 }
 
-func TestAddWord_jsonMalformed_Failed(t *testing.T) {
+func (w *WordTestSuite) TestAddWord_jsonMalformed_Failed() {
 	//given
-	newWord := "{\"Label\":hello,\"Meaning\":\"ciao\",\"Sentence\":\"\"}"
+	newWord := "{invalid joson}"
 	expectedErrorMessage := "body request malformed"
 
-	controller := gomock.NewController(t)
-	serviceMock := mock_service.NewMockWordService(controller)
-	sut := NewWordController(serviceMock)
-	router := mux.NewRouter().StrictSlash(true)
-	router.HandleFunc(sut.GetAddWordRoute().Path, sut.GetAddWordRoute().Function).Methods(sut.GetAddWordRoute().Method)
-
 	request, err := http.NewRequest(http.MethodPost, "/word", bytes.NewBuffer([]byte(newWord)))
-
-	if err != nil {
-		t.Fatal(err)
-	}
+	w.Require().NoError(err)
 
 	recorder := httptest.NewRecorder()
 
 	//when
-	serviceMock.EXPECT().SaveWord(gomock.Any()).Times(0)
-	router.ServeHTTP(recorder, request)
+	w.serviceMock.EXPECT().SaveWord(gomock.Any()).Times(0)
+	w.router.ServeHTTP(recorder, request)
 
 	//then
-	if status := recorder.Code; status != http.StatusBadRequest {
-		t.Errorf("Router returned wrong status code: got %v want %v", status, http.StatusBadRequest)
-	}
-
-	responseBody := recorder.Body.String()
-	if !strings.Contains(responseBody, expectedErrorMessage) {
-		t.Errorf("Router returned unexpected body: got %v want %v", responseBody, expectedErrorMessage)
-	}
-
+	assert.Equal(w.T(), recorder.Code, http.StatusBadRequest)
+	assert.Contains(w.T(), recorder.Body.String(), expectedErrorMessage)
 }
 
-func TestListWords(t *testing.T) {
+func (w *WordTestSuite) TestListWords() {
 	//given
 	words := make([]*model.Word, 0)
 	words = append(words, &model.Word{
@@ -132,63 +106,35 @@ func TestListWords(t *testing.T) {
 
 	expectedWordsList := "[{\"Label\":\"foo\",\"Meaning\":\"foo\",\"Sentence\":\"\"},{\"Label\":\"bar\",\"Meaning\":\"bar\",\"Sentence\":\"\"}]"
 
-	controller := gomock.NewController(t)
-	serviceMock := mock_service.NewMockWordService(controller)
-	sut := NewWordController(serviceMock)
-	router := mux.NewRouter().StrictSlash(true)
-	router.HandleFunc(sut.GetListWordRoute().Path, sut.GetListWordRoute().Function).Methods(sut.GetListWordRoute().Method)
-
 	request, err := http.NewRequest(http.MethodGet, "/word", nil)
-	if err != nil {
-		t.Fatal(err)
-	}
+	w.Require().NoError(err)
 
 	recorder := httptest.NewRecorder()
 
 	//when
-	serviceMock.EXPECT().ListWords().Times(1).Return(words, nil)
-	router.ServeHTTP(recorder, request)
+	w.serviceMock.EXPECT().ListWords().Times(1).Return(words, nil)
+	w.router.ServeHTTP(recorder, request)
 
 	//then
-	if status := recorder.Code; status != http.StatusOK {
-		t.Errorf("Router returned wrong status code: got %v want %v", status, http.StatusOK)
-	}
-
-	responseBody := recorder.Body.String()
-	if responseBody != expectedWordsList {
-		t.Errorf("Router returned unexpected body: got %v want %v", responseBody, expectedWordsList)
-	}
-
+	assert.Equal(w.T(), http.StatusOK, recorder.Code)
+	assert.Equal(w.T(), expectedWordsList, recorder.Body.String())
 }
 
-func TestListWords_noAvailableDictionary_returnBadRequest(t *testing.T) {
+func (w *WordTestSuite) TestListWords_noAvailableDictionary_returnBadRequest() {
 	//given
 	expectedError := errors.New("no dictionary available")
 
-	controller := gomock.NewController(t)
-	serviceMock := mock_service.NewMockWordService(controller)
-	sut := NewWordController(serviceMock)
-	router := mux.NewRouter().StrictSlash(true)
-	router.HandleFunc(sut.GetListWordRoute().Path, sut.GetListWordRoute().Function).Methods(sut.GetListWordRoute().Method)
-
 	request, err := http.NewRequest(http.MethodGet, "/word", nil)
-	if err != nil {
-		t.Fatal(err)
-	}
+	w.Require().NoError(err)
 
 	recorder := httptest.NewRecorder()
 
 	//when
-	serviceMock.EXPECT().ListWords().Times(1).Return(nil, expectedError)
-	router.ServeHTTP(recorder, request)
+	w.serviceMock.EXPECT().ListWords().Times(1).Return(nil, expectedError)
+	w.router.ServeHTTP(recorder, request)
 
 	//then
-	if status := recorder.Code; status != http.StatusBadRequest {
-		t.Errorf("Router returned wrong status code: got %v want %v", status, http.StatusBadRequest)
-	}
-
-	responseBody := recorder.Body.String()
-	if !strings.Contains(responseBody, expectedError.Error()) {
-		t.Errorf("Router returned unexpected body: got %v want %v", responseBody, expectedError.Error())
-	}
+	assert.Equal(w.T(), http.StatusBadRequest, recorder.Code)
+	//TOMAS to fix the new line character
+	assert.Contains(w.T(), recorder.Body.String(), expectedError.Error())
 }
