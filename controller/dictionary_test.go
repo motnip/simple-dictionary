@@ -75,7 +75,6 @@ func (d *DictionaryTestSuite) TestCreateDictionary_existDictionaryForALanguage_r
 	//given
 	dictionaryLanguage := "en"
 
-
 	firstRequest, err := http.NewRequest(http.MethodPost, "/dictionary", bytes.NewBuffer([]byte(dictionaryLanguage)))
 	d.Require().NoError(err)
 
@@ -98,7 +97,7 @@ func (d *DictionaryTestSuite) TestCreateDictionary_existDictionaryForALanguage_r
 
 func (d *DictionaryTestSuite) TestListDictionary_Succeed() {
 	//given
-		dictionaryList := make([]*model.Dictionary, 0)
+	dictionaryList := make([]*model.Dictionary, 0)
 	words := make([]*model.Word, 0)
 	words = append(words, &model.Word{
 		Label:    "foo",
