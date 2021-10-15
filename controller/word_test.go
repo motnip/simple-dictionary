@@ -75,7 +75,7 @@ func (w *WordTestSuite) TestAddWord_noDictionary_Failed() {
 
 func (w *WordTestSuite) TestAddWord_jsonMalformed_Failed() {
 	//given
-	newWord := "{invalid joson}"
+	newWord := "{\"Label\":\"hello\",\"Meaning\":\"ciao\",\"Sentence\":}"
 	expectedErrorMessage := "body request malformed"
 
 	request, err := http.NewRequest(http.MethodPost, "/word", bytes.NewBuffer([]byte(newWord)))

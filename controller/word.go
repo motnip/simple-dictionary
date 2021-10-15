@@ -34,22 +34,20 @@ func (w *wordcontroller) AddWord(httpResponse http.ResponseWriter, httpRequest *
 	var newWordDto model.Word
 	reqBody, err := ioutil.ReadAll(httpRequest.Body)
 	if err != nil {
-		w.log.LogErr(err.Error())
-		http.Error(httpResponse, err.Error(), http.StatusBadRequest)
+		setErrorResponse(httpResponse, w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	err = json.Unmarshal(reqBody, &newWordDto)
 	if err != nil {
-		w.log.LogErr(err.Error())
-		http.Error(httpResponse, "body request malformed: "+err.Error(), http.StatusBadRequest)
+		msgError := "body request malformed: " + err.Error()
+		setErrorResponse(httpResponse, w, msgError, http.StatusBadRequest)
 		return
 	}
 
 	err = w.wordService.SaveWord(&newWordDto)
 	if err != nil {
-		w.log.LogErr(err.Error())
-		http.Error(httpResponse, err.Error(), http.StatusBadRequest)
+		setErrorResponse(httpResponse, w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
@@ -58,8 +56,7 @@ func (w *wordcontroller) AddWord(httpResponse http.ResponseWriter, httpRequest *
 	//https://stackoverflow.com/questions/36319918/why-does-json-encoder-add-an-extra-line
 	output, err := json.Marshal(newWordDto)
 	if err != nil {
-		w.log.LogErr(err.Error())
-		http.Error(httpResponse, err.Error(), http.StatusInternalServerError)
+		setErrorResponse(httpResponse, w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	httpResponse.Write(output)
@@ -69,18 +66,21 @@ func (w *wordcontroller) ListWords(httpResponse http.ResponseWriter, httpRequest
 
 	words, err := w.wordService.ListWords()
 	if err != nil {
-		w.log.LogErr(err.Error())
-		http.Error(httpResponse, err.Error(), http.StatusBadRequest)
+		setErrorResponse(httpResponse, w, err.Error(), http.StatusBadRequest)
 		return
 	}
 	//json.NewEncoder(httpResponse).Encode(words)
 	output, err := json.Marshal(words)
 	if err != nil {
-		w.log.LogErr(err.Error())
-		http.Error(httpResponse, err.Error(), http.StatusInternalServerError)
+		setErrorResponse(httpResponse, w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	httpResponse.Write(output)
+}
+
+func setErrorResponse(httpResponse http.ResponseWriter, w *wordcontroller, errorMessage string, httpCode int) {
+	w.log.LogErr(errorMessage)
+	http.Error(httpResponse, errorMessage, httpCode)
 }
 
 func (w *wordcontroller) GetAddWordRoute() *web.Route {
