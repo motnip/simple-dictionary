@@ -80,7 +80,8 @@ func (w *wordcontroller) ListWords(httpResponse http.ResponseWriter, httpRequest
 
 func setErrorResponse(httpResponse http.ResponseWriter, w *wordcontroller, errorMessage string, httpCode int) {
 	w.log.LogErr(errorMessage)
-	http.Error(httpResponse, errorMessage, httpCode)
+	httpResponse.WriteHeader(httpCode)
+	httpResponse.Write([]byte(errorMessage))
 }
 
 func (w *wordcontroller) GetAddWordRoute() *web.Route {

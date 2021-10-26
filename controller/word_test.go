@@ -135,6 +135,5 @@ func (w *WordTestSuite) TestListWords_noAvailableDictionary_returnBadRequest() {
 
 	//then
 	assert.Equal(w.T(), http.StatusBadRequest, recorder.Code)
-	//TOMAS to fix the new line character
-	assert.Contains(w.T(), recorder.Body.String(), expectedError.Error())
+	assert.Equal(w.T(), recorder.Body.String(), expectedError.Error())
 }
