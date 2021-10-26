@@ -3,14 +3,15 @@ package controller
 import (
 	"bytes"
 	"github.com/motnip/sermo/service"
+	"github.com/motnip/sermo/web"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/suite"
 	"net/http"
 	"net/http/httptest"
-	"os"
 	"testing"
 
 	"github.com/gorilla/mux"
 	"github.com/motnip/sermo/model"
-	"github.com/motnip/sermo/web"
 )
 
 var router *mux.Router
@@ -19,182 +20,133 @@ var wordService service.WordService
 var dictionaryController DictionaryController
 var wordController WordController
 
-func TestMain(m *testing.M) {
-	setUp()
-	exitVal := m.Run()
-
-	os.Exit(exitVal)
+type IntegrationTestSuite struct {
+	suite.Suite
+	repository           model.Repository
+	wordService          service.WordService
+	dictionaryController DictionaryController
+	wordController       WordController
+	newRouter            *web.Router
+	router               *mux.Router
 }
 
-func TestIntegration_Controller_AddNewWord_Succeed(t *testing.T) {
+func TestIntegrationTestSuite(t *testing.T) {
+	suite.Run(t, new(IntegrationTestSuite))
+}
+
+func (suite *IntegrationTestSuite) SetupSuite() {
+	suite.repository = model.NewRepository()
+	suite.wordService = service.NewWordService(suite.repository)
+	suite.dictionaryController = NewController(suite.repository)
+	suite.wordController = NewWordController(suite.wordService)
+
+	suite.newRouter = web.NewRouter()
+	suite.newRouter.InitRoute(suite.dictionaryController.GetCreateDictionaryRoute())
+	suite.newRouter.InitRoute(suite.dictionaryController.GetListAllDictionary())
+	suite.newRouter.InitRoute(suite.wordController.GetAddWordRoute())
+	suite.newRouter.InitRoute(suite.wordController.GetListWordRoute())
+
+	suite.router = suite.newRouter.Router()
+}
+
+func (suite *IntegrationTestSuite) TestIntegration_Controller_AddNewWord_Succeed() {
 
 	if testing.Short() {
-		t.Skip("skipping testing in short mode")
+		suite.T().Skip("skipping testing in short mode")
 	}
-
-	defer tearDown()
 
 	//given
 	dictionaryLanguage := "en"
 	newWord := "{\"Label\":\"hello\",\"Meaning\":\"ciao\",\"Sentence\":\"\"}"
-
 	expectedWordsList := "[" + newWord + "]"
 
 	requestCreateDictionary, err := http.NewRequest(http.MethodPost, "/dictionary", bytes.NewBuffer([]byte(dictionaryLanguage)))
 	requestCreateDictionary.Header.Add("Content-type", "application/json")
+	suite.Require().NoError(err)
 
-	if err != nil {
-		t.Fatal(err)
-	}
 	requestAddNewWord, err := http.NewRequest(http.MethodPost, "/word", bytes.NewBuffer([]byte(newWord)))
 	requestAddNewWord.Header.Add("Content-type", "application/json")
-	if err != nil {
-		t.Fatal(err)
-	}
+	suite.Require().NoError(err)
+
 	requestListAllWord, err := http.NewRequest(http.MethodGet, "/word", nil)
-	if err != nil {
-		t.Fatal(err)
-	}
+	suite.Require().NoError(err)
 
 	recorderCreateDictionary := httptest.NewRecorder()
 	recorderAddWord := httptest.NewRecorder()
 	recorderListWord := httptest.NewRecorder()
 
 	//when
-	router.ServeHTTP(recorderCreateDictionary, requestCreateDictionary)
-	router.ServeHTTP(recorderAddWord, requestAddNewWord)
-	router.ServeHTTP(recorderListWord, requestListAllWord)
+	suite.router.ServeHTTP(recorderCreateDictionary, requestCreateDictionary)
+	suite.router.ServeHTTP(recorderAddWord, requestAddNewWord)
+	suite.router.ServeHTTP(recorderListWord, requestListAllWord)
 
 	//then
-	if status := recorderCreateDictionary.Code; status != http.StatusCreated {
-		t.Errorf("Router returned wrong status code: got %v want %v", status, http.StatusCreated)
-	}
-
-	if status := recorderAddWord.Code; status != http.StatusCreated {
-		t.Errorf("Router returned wrong status code: got %v want %v", status, http.StatusCreated)
-	}
-	responseBody := recorderAddWord.Body.String()
-	if responseBody != newWord {
-		t.Errorf("Router returned unexpected body: got %v want %v", responseBody, newWord)
-	}
-	if status := recorderListWord.Code; status != http.StatusOK {
-		t.Errorf("Router returned wrong status code: got %v want %v", status, http.StatusOK)
-	}
-
-	responseBody = recorderListWord.Body.String()
-	if responseBody != expectedWordsList {
-		t.Errorf("Router returned unexpected body: got %v want %v", responseBody, expectedWordsList)
-	}
+	assert.Equal(suite.T(), recorderCreateDictionary.Code, http.StatusCreated)
+	assert.Equal(suite.T(), recorderAddWord.Code, http.StatusCreated)
+	assert.Equal(suite.T(), recorderAddWord.Body.String(), newWord)
+	assert.Equal(suite.T(), recorderListWord.Code, http.StatusOK)
+	assert.Equal(suite.T(), recorderListWord.Body.String(), expectedWordsList)
 }
 
-func TestIntegration_Controller_CreateDictionary_Succeed(t *testing.T) {
+func (suite *IntegrationTestSuite) TestIntegration_Controller_CreateDictionary_Succeed() {
 
 	if testing.Short() {
-		t.Skip("skipping testing in short mode")
+		suite.T().Skip("skipping testing in short mode")
 	}
-
-	defer tearDown()
 
 	//given
 	dictionaryLanguage := "en"
-
 	requestCreateDictionary, err := http.NewRequest(http.MethodPost, "/dictionary", bytes.NewBuffer([]byte(dictionaryLanguage)))
 	requestCreateDictionary.Header.Add("Content-type", "application/json")
-	if err != nil {
-		t.Fatal(err)
-	}
+	suite.Require().NoError(err)
 
 	requestListDictionary, err := http.NewRequest(http.MethodGet, "/dictionary", nil)
-	if err != nil {
-		t.Fatal(err)
-	}
+	suite.Require().NoError(err)
 
 	recorderCreateDictionary := httptest.NewRecorder()
 	recorderListDictionary := httptest.NewRecorder()
-
 	expectedList := "[{\"Language\":\"en\",\"Words\":null}]"
+
 	//when
-	router.ServeHTTP(recorderCreateDictionary, requestCreateDictionary)
-	router.ServeHTTP(recorderListDictionary, requestListDictionary)
+	suite.router.ServeHTTP(recorderCreateDictionary, requestCreateDictionary)
+	suite.router.ServeHTTP(recorderListDictionary, requestListDictionary)
 
 	//then
-	if status := recorderCreateDictionary.Code; status != http.StatusCreated {
-		t.Errorf("Router returned wrong status code: got %v want %v", status, http.StatusCreated)
-	}
-
-	if status := recorderListDictionary.Code; status != http.StatusOK {
-		t.Errorf("Router returned wrong status code: got %v want %v", status, http.StatusOK)
-	}
-	responseBody := recorderListDictionary.Body.String()
-	if responseBody != expectedList {
-		t.Errorf("Router returned unexpected body: got %v want %v", responseBody, expectedList)
-	}
+	assert.Equal(suite.T(), recorderCreateDictionary.Code, http.StatusCreated)
+	assert.Equal(suite.T(), recorderListDictionary.Code, http.StatusOK)
+	assert.Equal(suite.T(), recorderListDictionary.Body.String(), expectedList)
 }
 
-func TestIntegration_Controller_NoDictionaryExists_Failed(t *testing.T) {
+func (suite *IntegrationTestSuite) TestIntegration_Controller_NoDictionaryExists_Failed() {
 
 	if testing.Short() {
-		t.Skip("skipping testing in short mode")
+		suite.T().Skip("skipping testing in short mode")
 	}
-
-	defer tearDown()
 
 	//given
 	newWord := "{\"Label\":\"hello\",\"Meaning\":\"ciao\",\"Sentence\":\"\"}"
 	expectedErrorMessage := "no dictionary available\n"
-
 	requestAddNewWord, err := http.NewRequest(http.MethodPost, "/word", bytes.NewBuffer([]byte(newWord)))
 	requestAddNewWord.Header.Add("Content-type", "application/json")
-	if err != nil {
-		t.Fatal(err)
-	}
+	suite.Require().NoError(err)
+
 	requestListAllWord, err := http.NewRequest(http.MethodGet, "/word", nil)
-	if err != nil {
-		t.Fatal(err)
-	}
+	suite.Require().NoError(err)
 
 	recorderAddWord := httptest.NewRecorder()
 	recorderListWord := httptest.NewRecorder()
 
 	//when
-	router.ServeHTTP(recorderAddWord, requestAddNewWord)
-	router.ServeHTTP(recorderListWord, requestListAllWord)
+	suite.router.ServeHTTP(recorderAddWord, requestAddNewWord)
+	suite.router.ServeHTTP(recorderListWord, requestListAllWord)
 
 	//then
-
-	if status := recorderAddWord.Code; status != http.StatusBadRequest {
-		t.Errorf("Router returned wrong status code: got %v want %v", status, http.StatusBadRequest)
-	}
-	responseBody := recorderAddWord.Body.String()
-	if responseBody != expectedErrorMessage {
-		t.Errorf("Router returned unexpected body: got %v want %v", responseBody, expectedErrorMessage)
-	}
-
-	if status := recorderListWord.Code; status != http.StatusBadRequest {
-		t.Errorf("Router returned wrong status code: got %v want %v", status, http.StatusBadRequest)
-	}
-
-	responseBody = recorderListWord.Body.String()
-	if responseBody != expectedErrorMessage {
-		t.Errorf("Router returned unexpected body: got %v want %v", responseBody, expectedErrorMessage)
-	}
+	assert.Equal(suite.T(), recorderAddWord.Code, http.StatusBadRequest)
+	assert.Equal(suite.T(), recorderAddWord.Body.String(), expectedErrorMessage)
+	assert.Equal(suite.T(), recorderListWord.Code, http.StatusBadRequest)
+	assert.Equal(suite.T(), recorderListWord.Body.String(), expectedErrorMessage)
 }
 
-func setUp() {
-	repository = model.NewRepository()
-	wordService = service.NewWordService(repository)
-	dictionaryController = NewController(repository)
-	wordController = NewWordController(wordService)
-
-	newRouter := web.NewRouter()
-	newRouter.InitRoute(dictionaryController.GetCreateDictionaryRoute())
-	newRouter.InitRoute(dictionaryController.GetListAllDictionary())
-	newRouter.InitRoute(wordController.GetAddWordRoute())
-	newRouter.InitRoute(wordController.GetListWordRoute())
-
-	router = newRouter.Router()
-}
-
-func tearDown() {
-	repository.DeleteDictionary()
+func (suite *IntegrationTestSuite) TearDownTest() {
+	suite.repository.DeleteDictionary()
 }
