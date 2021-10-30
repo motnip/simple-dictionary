@@ -5,151 +5,105 @@ import (
 	"github.com/golang/mock/gomock"
 	mock_model "github.com/motnip/sermo/mocks/model"
 	"github.com/motnip/sermo/model"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/suite"
 	"testing"
 )
 
-func Test_saveWord_successful(t *testing.T) {
-	word := model.Word{
+type WordServiceTestSuite struct {
+	suite.Suite
+
+	controller     *gomock.Controller
+	repositoryMock *mock_model.MockRepository
+	sut            WordService
+	word           *model.Word
+}
+
+func TestWordServiceTestSuite(t *testing.T) {
+	suite.Run(t, new(WordServiceTestSuite))
+}
+
+func (w *WordServiceTestSuite) SetupTest() {
+
+	w.controller = gomock.NewController(w.T())
+	w.repositoryMock = mock_model.NewMockRepository(w.controller)
+	w.sut = NewWordService(w.repositoryMock)
+	w.word = &model.Word{
 		Label:    "label",
 		Meaning:  "Meaning",
 		Sentence: "sentence",
 	}
-
-	controller := gomock.NewController(t)
-	repositoryMock := mock_model.NewMockRepository(controller)
-
-	repositoryMock.EXPECT().ExistsDictionary().Times(1).Return(true)
-	repositoryMock.EXPECT().AddWord(gomock.Any()).Return(nil)
-
-	sut := NewWordService(repositoryMock)
-	err := sut.SaveWord(&word)
-
-	if err != nil {
-		t.Errorf("Router returned unexpected value: got %v want %v", err, "nil")
-	}
 }
 
-func Test_saveWord_errorOnSave_Failed(t *testing.T) {
-	word := model.Word{
-		Label:    "label",
-		Meaning:  "meaning",
-		Sentence: "sentence",
-	}
+func (w *WordServiceTestSuite) Test_saveWord_successful() {
+
+	w.repositoryMock.EXPECT().ExistsDictionary().Times(1).Return(true)
+	w.repositoryMock.EXPECT().AddWord(gomock.Any()).Return(nil)
+
+	err := w.sut.SaveWord(w.word)
+
+	assert.NoError(w.T(), err)
+}
+
+func (w *WordServiceTestSuite) Test_saveWord_errorOnSave_Failed() {
+
 	expectedError := errors.New("forced error - save word")
 
-	controller := gomock.NewController(t)
-	repositoryMock := mock_model.NewMockRepository(controller)
+	w.repositoryMock.EXPECT().ExistsDictionary().Times(1).Return(true)
+	w.repositoryMock.EXPECT().AddWord(gomock.Any()).Times(1).Return(expectedError)
 
-	repositoryMock.EXPECT().ExistsDictionary().Times(1).Return(true)
-	repositoryMock.EXPECT().AddWord(gomock.Any()).Times(1).Return(expectedError)
+	err := w.sut.SaveWord(w.word)
 
-	sut := NewWordService(repositoryMock)
-	err := sut.SaveWord(&word)
-
-	if err == nil {
-		t.Errorf("Router returned unexpected value: got %v want %v", err, "nil")
-	}
-
-	if err.Error() != expectedError.Error() {
-		t.Errorf("Router returned unexpected value: got %v want %v", err.Error(), expectedError.Error())
-	}
+	assert.Error(w.T(), err)
+	assert.ErrorIs(w.T(), err, expectedError)
 }
 
-func Test_SaveWord_noDictionaryAvailable_Failed(t *testing.T) {
-	word := model.Word{
-		Label:    "label",
-		Meaning:  "meaning",
-		Sentence: "sentence",
-	}
+func (w *WordServiceTestSuite) Test_SaveWord_noDictionaryAvailable_Failed() {
+
 	expectedError := model.NO_DICTIONARY
 
-	controller := gomock.NewController(t)
-	repositoryMock := mock_model.NewMockRepository(controller)
+	w.repositoryMock.EXPECT().ExistsDictionary().Times(1).Return(false)
+	w.repositoryMock.EXPECT().AddWord(gomock.Any()).Times(0)
 
-	repositoryMock.EXPECT().ExistsDictionary().Times(1).Return(false)
-	repositoryMock.EXPECT().AddWord(gomock.Any()).Times(0)
-
-	sut := NewWordService(repositoryMock)
-	err := sut.SaveWord(&word)
-
-	if err == nil {
-		t.Errorf("Router returned unexpected value: got %v want %v", err, "nil")
-	}
-
-	if err.Error() != expectedError {
-		t.Errorf("Router returned unexpected value: got %v want %v", err.Error(), expectedError)
-	}
+	err := w.sut.SaveWord(w.word)
+	assert.Error(w.T(), err)
+	assert.EqualError(w.T(), err, expectedError)
 }
 
-func Test_saveWord_errorOnValidate_Failed(t *testing.T) {
-	word := model.Word{
-		Label:    "",
-		Meaning:  "meaning",
-		Sentence: "sentence",
-	}
+func (w *WordServiceTestSuite) Test_saveWord_errorOnValidate_Failed() {
+
+	w.word.Label = ""
 	expectedError := errors.New("forced error - validation failed")
 
-	controller := gomock.NewController(t)
-	repositoryMock := mock_model.NewMockRepository(controller)
+	w.repositoryMock.EXPECT().AddWord(gomock.Any()).Times(0).Return(expectedError)
 
-	repositoryMock.EXPECT().AddWord(gomock.Any()).Times(0).Return(expectedError)
+	err := w.sut.SaveWord(w.word)
 
-	sut := NewWordService(repositoryMock)
-	err := sut.SaveWord(&word)
-
-	if err == nil {
-		t.Errorf("Router returned unexpected value: got %v want %v", err, "nil")
-	}
+	assert.Error(w.T(), err, expectedError)
 }
 
-func Test_ListWords_succeed(t *testing.T) {
-	word := model.Word{
-		Label:    "",
-		Meaning:  "meaning",
-		Sentence: "sentence",
-	}
+func (w *WordServiceTestSuite) Test_ListWords_succeed() {
 
 	words := make([]*model.Word, 0)
-	words = append(words, &word)
+	words = append(words, w.word)
 
-	controller := gomock.NewController(t)
-	repositoryMock := mock_model.NewMockRepository(controller)
+	w.repositoryMock.EXPECT().ExistsDictionary().Times(1).Return(true)
+	w.repositoryMock.EXPECT().ListWords().Times(1).Return(words, nil)
 
-	repositoryMock.EXPECT().ExistsDictionary().Times(1).Return(true)
-	repositoryMock.EXPECT().ListWords().Times(1).Return(words, nil)
+	savedWord, err := w.sut.ListWords()
 
-	sut := NewWordService(repositoryMock)
-	savedWord, err := sut.ListWords()
-
-	if err != nil {
-		t.Errorf("Router returned unexpected value: got %v want %v", err, "nil")
-	}
-
-	if len(savedWord) != len(words) {
-		t.Errorf("Router returned unexpected value: got %v want %v", len(savedWord), len(words))
-	}
+	assert.NoError(w.T(), err)
+	assert.Equal(w.T(), len(savedWord), len(words))
 }
 
-func Test_ListWords_noDictionaryAvailable_failed(t *testing.T) {
+func (w *WordServiceTestSuite) Test_ListWords_noDictionaryAvailable_failed() {
 
-	controller := gomock.NewController(t)
-	repositoryMock := mock_model.NewMockRepository(controller)
+	w.repositoryMock.EXPECT().ExistsDictionary().Times(1).Return(false)
+	w.repositoryMock.EXPECT().ListWords().Times(0)
 
-	repositoryMock.EXPECT().ExistsDictionary().Times(1).Return(false)
-	repositoryMock.EXPECT().ListWords().Times(0)
+	savedWord, err := w.sut.ListWords()
 
-	sut := NewWordService(repositoryMock)
-	savedWord, err := sut.ListWords()
-
-	if err == nil {
-		t.Errorf("Router returned unexpected value: got %v want %v", err, "nil")
-	}
-
-	if err.Error() != model.NO_DICTIONARY {
-		t.Errorf("Router returned unexpected value: got %v want %v", err, "nil")
-	}
-
-	if len(savedWord) != 0 {
-		t.Errorf("Router returned unexpected value: got %v want %v", len(savedWord), 0)
-	}
+	assert.Error(w.T(), err)
+	assert.Errorf(w.T(), err, model.NO_DICTIONARY)
+	assert.Len(w.T(), savedWord, 0)
 }
